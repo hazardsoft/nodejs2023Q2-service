@@ -1,34 +1,65 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  ParseUUIDPipe,
+  Put,
+  HttpCode,
+} from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
-import { UpdateAlbumDto } from './dto/update-album.dto';
+import { Album } from './entities/album.entity';
+import { TrackService } from 'src/track/track.service';
+import { CreateTrackDto } from 'src/track/dto/create-track.dto';
 
 @Controller('album')
 export class AlbumController {
-  constructor(private readonly albumService: AlbumService) {}
+  constructor(
+    private readonly albumService: AlbumService,
+    private readonly trackService: TrackService,
+  ) {}
 
   @Post()
-  create(@Body() createAlbumDto: CreateAlbumDto) {
-    return this.albumService.create(createAlbumDto);
+  async create(@Body() createTrackDto: CreateAlbumDto): Promise<Album> {
+    return this.albumService.create(createTrackDto);
   }
 
   @Get()
-  findAll() {
+  async findAll(): Promise<Album[]> {
     return this.albumService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.albumService.findOne(+id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Album> {
+    return this.albumService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
-    return this.albumService.update(+id, updateAlbumDto);
+  @Put(':id')
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateArtistDto: CreateAlbumDto,
+  ): Promise<Album> {
+    return this.albumService.update(id, updateArtistDto);
   }
 
+  @HttpCode(204)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.albumService.remove(+id);
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    const removedAlbum = await this.albumService.remove(id);
+    if (removedAlbum) {
+      const tracks = await this.trackService.findAll();
+      const tracksToUpdate = tracks.filter(
+        (t) => t.albumId === removedAlbum.id,
+      );
+      tracksToUpdate.forEach((t) => {
+        const trackUpdateDto = Object.assign({ ...t }, <
+          Partial<CreateTrackDto>
+        >{ albumId: null });
+        this.trackService.update(t.id, trackUpdateDto);
+      });
+    }
   }
 }
