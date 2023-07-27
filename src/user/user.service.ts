@@ -15,7 +15,7 @@ export class UserService {
     user.login = createUserDto.login;
     user.password = createUserDto.password;
     user.version = 1;
-    user.createdAt = new Date().getTime();
+    user.createdAt = user.updatedAt = new Date().getTime();
 
     this.users.push(user);
     return user;
