@@ -15,12 +15,22 @@ import { TrackNotFoundError } from 'src/track/errors';
 import { InvalidFavId } from './errors';
 import { AlbumNotFoundError } from 'src/album/errors';
 import { ArtistNotFoundError } from 'src/artist/errors';
-import { Favs } from './entities/fav.entity';
+import { Favorites } from './entities/fav.entity';
+import {
+  ApiBadRequestResponse,
+  ApiUnprocessableEntityResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiTags,
+  ApiOperation,
+  ApiCreatedResponse,
+} from '@nestjs/swagger';
 
 type FavCreateResponse = {
   message: string;
 };
 @Controller('favs')
+@ApiTags('Favs')
 export class FavsController {
   constructor(
     private readonly favsService: FavsService,
@@ -30,7 +40,11 @@ export class FavsController {
   ) {}
 
   @Get()
-  async findAll(): Promise<Favs> {
+  @ApiOperation({
+    summary: 'Get all favorites',
+    description: 'Gets all favorites movies, tracks and books',
+  })
+  async findAll(): Promise<Favorites> {
     const favs = await this.favsService.findAll();
     const artists = await this.artistService.findAll();
     const albums = await this.albumService.findAll();
@@ -43,6 +57,17 @@ export class FavsController {
   }
 
   @Post('/track/:id')
+  @ApiOperation({
+    summary: 'Add track to the favorites',
+    description: 'Add track to the favorites',
+  })
+  @ApiCreatedResponse({ description: 'Added successfully' })
+  @ApiBadRequestResponse({
+    description: 'Bad. trackId is invalid (not uuid)',
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "Track with id doesn't exist",
+  })
   async createTrackFav(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<FavCreateResponse> {
@@ -63,11 +88,35 @@ export class FavsController {
 
   @HttpCode(204)
   @Delete('/track/:id')
+  @ApiOperation({
+    summary: 'Delete track from favorites',
+    description: 'Delete track from favorites',
+  })
+  @ApiNoContentResponse({
+    description: 'Deleted successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad. trackId is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({
+    description: 'Track was not found',
+  })
   async removeTrackFav(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.favsService.removeTrack(id);
   }
 
   @Post('/album/:id')
+  @ApiOperation({
+    summary: 'Add album to the favorites',
+    description: 'Add album to the favorites',
+  })
+  @ApiCreatedResponse({ description: 'Added successfully' })
+  @ApiBadRequestResponse({
+    description: 'Bad. albumId is invalid (not uuid)',
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "Album with id doesn't exist",
+  })
   async createAlbumFav(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<FavCreateResponse> {
@@ -88,11 +137,35 @@ export class FavsController {
 
   @HttpCode(204)
   @Delete('/album/:id')
+  @ApiOperation({
+    summary: 'Delete album from favorites',
+    description: 'Delete album from favorites',
+  })
+  @ApiNoContentResponse({
+    description: 'Deleted successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad. albumId is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({
+    description: 'Album was not found',
+  })
   async removeAlbumFav(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.favsService.removeAlbum(id);
   }
 
   @Post('/artist/:id')
+  @ApiOperation({
+    summary: 'Add artist to the favorites',
+    description: 'Add artist to the favorites',
+  })
+  @ApiCreatedResponse({ description: 'Added successfully' })
+  @ApiBadRequestResponse({
+    description: 'Bad request. artistId is invalid (not uuid)',
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "Artist with id doesn't exist",
+  })
   async createArtistFav(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<FavCreateResponse> {
@@ -113,6 +186,19 @@ export class FavsController {
 
   @HttpCode(204)
   @Delete('/artist/:id')
+  @ApiOperation({
+    summary: 'Delete artist from favorites',
+    description: 'Delete artist from favorites',
+  })
+  @ApiNoContentResponse({
+    description: 'Deleted successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request. artistId is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({
+    description: 'Artist was not found',
+  })
   async removeArtistFav(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.favsService.removeArtist(id);
   }

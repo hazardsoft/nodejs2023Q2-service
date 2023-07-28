@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { FavsIds } from './entities/fav.entity';
+import { FavoritesIds } from './entities/fav.entity';
 import { FavNotFoundError } from './errors';
 
 @Injectable()
 export class FavsService {
-  private readonly favs: FavsIds = new FavsIds();
+  private readonly favs: FavoritesIds = new FavoritesIds();
 
   constructor() {
     this.favs.albums = [];
@@ -12,7 +12,7 @@ export class FavsService {
     this.favs.tracks = [];
   }
 
-  async findAll(): Promise<FavsIds> {
+  async findAll(): Promise<FavoritesIds> {
     return this.favs;
   }
 

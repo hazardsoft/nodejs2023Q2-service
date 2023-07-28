@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { generateApiDocs } from './docsGenerator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,13 +12,21 @@ async function bootstrap() {
   const port = configService.get<number>('PORT');
 
   const config = new DocumentBuilder()
-    .setTitle('Home Library')
-    .setDescription('Home Library API description')
-    .setVersion('1.0')
+    .setTitle('Home Library Service')
+    .setDescription('Home music library service')
+    .setVersion('1.0.0')
+    .addServer('/api')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config, {
+    operationIdFactory: (_controllerKey: string, methodKey: string) =>
+      methodKey,
+  });
   SwaggerModule.setup('doc', app, document);
+
+  if (process.env.NODE_ENV === 'development') {
+    await generateApiDocs(document);
+  }
 
   app.useGlobalPipes(
     new ValidationPipe({

@@ -10,9 +10,17 @@ import {
   ParseUUIDPipe,
   UseInterceptors,
   ClassSerializerInterceptor,
-  HttpStatus,
 } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOperation,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
@@ -20,48 +28,57 @@ import { User } from './entities/user.entity';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
+@ApiTags('User')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'required body fields are not supplied',
+  @ApiOperation({ summary: 'Create user', description: 'Creates a new user' })
+  @ApiCreatedResponse({
+    description: 'The user has been created',
+    schema: { $ref: getSchemaPath(User) },
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request. body does not contain required fields',
   })
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all users', description: 'Gets all users' })
   async findAll(): Promise<User[]> {
     return this.userService.findAll();
   }
 
   @Get(':id')
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'supplied id is not UUID',
+  @ApiOperation({
+    summary: 'Get single user by id',
+    description: 'Get single user by id',
   })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'user id is not found',
+  @ApiBadRequestResponse({
+    description: 'Bad request. userId is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found',
   })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
     return this.userService.findOne(id);
   }
 
   @Put(':id')
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'supplied id is not UUID',
+  @ApiOperation({
+    summary: "Update a user's password",
+    description: "Updates a user's password by ID",
   })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'user id is not found',
+  @ApiBadRequestResponse({
+    description: 'Bad request. userId is invalid (not uuid)',
   })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'old password does not match',
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
+  @ApiForbiddenResponse({
+    description: 'oldPassword is wrong',
   })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -72,17 +89,18 @@ export class UserController {
 
   @HttpCode(204)
   @Delete(':id')
-  @ApiResponse({
-    status: HttpStatus.NO_CONTENT,
-    description: 'user successfully deleted',
+  @ApiOperation({
+    summary: 'Delete user',
+    description: 'Deletes user by ID',
   })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'supplied id is not UUID',
+  @ApiNoContentResponse({
+    description: 'The user has been deleted',
   })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'user id is not found',
+  @ApiBadRequestResponse({
+    description: 'Bad request. userId is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found',
   })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.userService.remove(id);

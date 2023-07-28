@@ -15,8 +15,18 @@ import { Album } from './entities/album.entity';
 import { TrackService } from 'src/track/track.service';
 import { CreateTrackDto } from 'src/track/dto/create-track.dto';
 import { FavsService } from 'src/favs/favs.service';
+import {
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiTags,
+  ApiOperation,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  getSchemaPath,
+} from '@nestjs/swagger';
 
 @Controller('album')
+@ApiTags('Album')
 export class AlbumController {
   constructor(
     private readonly albumService: AlbumService,
@@ -25,21 +35,56 @@ export class AlbumController {
   ) {}
 
   @Post()
+  @ApiOperation({
+    summary: 'Add new album',
+    description: 'Add new album information',
+  })
+  @ApiCreatedResponse({
+    description: 'Album is created',
+    schema: { $ref: getSchemaPath(Album) },
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request. body does not contain required fields',
+  })
   async create(@Body() createTrackDto: CreateAlbumDto): Promise<Album> {
     return this.albumService.create(createTrackDto);
   }
 
   @Get()
+  @ApiOperation({
+    summary: 'Get albums list',
+    description: 'Gets all library albums list',
+  })
   async findAll(): Promise<Album[]> {
     return this.albumService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({
+    summary: 'Get single album by id',
+    description: 'Gets single album by id',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request. albumId is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({
+    description: 'Album was not found',
+  })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Album> {
     return this.albumService.findOne(id);
   }
 
   @Put(':id')
+  @ApiOperation({
+    summary: 'Update album information',
+    description: 'Update library album information by UUID',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request. albumId is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({
+    description: 'Album was not found',
+  })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateArtistDto: CreateAlbumDto,
@@ -49,6 +94,17 @@ export class AlbumController {
 
   @HttpCode(204)
   @Delete(':id')
+  @ApiOperation({
+    summary: 'Delete album',
+    description: 'Delete album from library',
+  })
+  @ApiNoContentResponse({ description: 'Deleted successfully' })
+  @ApiBadRequestResponse({
+    description: 'Bad request. albumId is invalid (not uuid)',
+  })
+  @ApiNotFoundResponse({
+    description: 'Album was not found',
+  })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     const removedAlbum = await this.albumService.remove(id);
     if (removedAlbum) {
