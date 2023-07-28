@@ -16,6 +16,7 @@ import { TrackService } from 'src/track/track.service';
 import { CreateTrackDto } from 'src/track/dto/create-track.dto';
 import { AlbumService } from 'src/album/album.service';
 import { CreateAlbumDto } from 'src/album/dto/create-album.dto';
+import { FavsService } from 'src/favs/favs.service';
 
 @Controller('artist')
 export class ArtistController {
@@ -23,6 +24,7 @@ export class ArtistController {
     private readonly artistService: ArtistService,
     private readonly trackService: TrackService,
     private readonly albumService: AlbumService,
+    private readonly favsService: FavsService,
   ) {}
 
   @Post()
@@ -74,6 +76,10 @@ export class ArtistController {
         >{ artistId: null });
         this.albumService.update(a.id, albumUpdateDto);
       });
+
+      try {
+        await this.favsService.removeArtist(removedArtist.id);
+      } catch (e) {}
     }
   }
 }

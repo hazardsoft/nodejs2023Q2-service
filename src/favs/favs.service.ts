@@ -1,26 +1,60 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFavDto } from './dto/create-fav.dto';
-import { UpdateFavDto } from './dto/update-fav.dto';
+import { Fav } from './entities/fav.entity';
+import { FavNotFoundError } from './errors';
 
 @Injectable()
 export class FavsService {
-  create(createFavDto: CreateFavDto) {
-    return 'This action adds a new fav';
+  private readonly favs: Fav = new Fav();
+
+  constructor() {
+    this.favs.albums = [];
+    this.favs.artists = [];
+    this.favs.tracks = [];
   }
 
-  findAll() {
-    return `This action returns all favs`;
+  async findAll(): Promise<Fav> {
+    return this.favs;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} fav`;
+  async createTrack(id: string): Promise<boolean> {
+    this.favs.tracks.push(id);
+    return true;
   }
 
-  update(id: number, updateFavDto: UpdateFavDto) {
-    return `This action updates a #${id} fav`;
+  async createAlbum(id: string): Promise<boolean> {
+    this.favs.albums.push(id);
+    return true;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} fav`;
+  async createArtist(id: string): Promise<boolean> {
+    this.favs.artists.push(id);
+    return true;
+  }
+
+  async removeTrack(id: string): Promise<string> {
+    const foundIndex = this.favs.tracks.findIndex((t) => t === id);
+    if (foundIndex === -1) {
+      throw new FavNotFoundError(id, 'track');
+    }
+    const removedId = this.favs.tracks.splice(foundIndex, 1).shift();
+    return removedId;
+  }
+
+  async removeAlbum(id: string): Promise<string> {
+    const foundIndex = this.favs.albums.findIndex((t) => t === id);
+    if (foundIndex === -1) {
+      throw new FavNotFoundError(id, 'album');
+    }
+    const removedId = this.favs.albums.splice(foundIndex, 1).shift();
+    return removedId;
+  }
+
+  async removeArtist(id: string): Promise<string> {
+    const foundIndex = this.favs.artists.findIndex((t) => t === id);
+    if (foundIndex === -1) {
+      throw new FavNotFoundError(id, 'artist');
+    }
+    const removedId = this.favs.artists.splice(foundIndex, 1).shift();
+    return removedId;
   }
 }

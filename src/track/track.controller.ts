@@ -12,10 +12,14 @@ import {
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { Track } from './entities/track.entity';
+import { FavsService } from 'src/favs/favs.service';
 
 @Controller('track')
 export class TrackController {
-  constructor(private readonly trackService: TrackService) {}
+  constructor(
+    private readonly trackService: TrackService,
+    private readonly favsService: FavsService,
+  ) {}
 
   @Post()
   async create(@Body() createTrackDto: CreateTrackDto): Promise<Track> {
@@ -43,6 +47,11 @@ export class TrackController {
   @HttpCode(204)
   @Delete(':id')
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    await this.trackService.remove(id);
+    const removedTrack = await this.trackService.remove(id);
+    if (removedTrack) {
+      try {
+        await this.favsService.removeTrack(removedTrack.id);
+      } catch (e) {}
+    }
   }
 }
