@@ -11,19 +11,11 @@ import { FavsService } from './favs.service';
 import { TrackService } from 'src/track/track.service';
 import { AlbumService } from 'src/album/album.service';
 import { ArtistService } from 'src/artist/artist.service';
-import { Artist } from 'src/artist/entities/artist.entity';
-import { Track } from 'src/track/entities/track.entity';
-import { Album } from 'src/album/entities/album.entity';
 import { TrackNotFoundError } from 'src/track/errors';
 import { InvalidFavId } from './errors';
 import { AlbumNotFoundError } from 'src/album/errors';
 import { ArtistNotFoundError } from 'src/artist/errors';
-
-type FavsResponse = {
-  artists: Artist[];
-  albums: Album[];
-  tracks: Track[];
-};
+import { Favs } from './entities/fav.entity';
 
 type FavCreateResponse = {
   message: string;
@@ -38,7 +30,7 @@ export class FavsController {
   ) {}
 
   @Get()
-  async findAll(): Promise<FavsResponse> {
+  async findAll(): Promise<Favs> {
     const favs = await this.favsService.findAll();
     const artists = await this.artistService.findAll();
     const albums = await this.albumService.findAll();
