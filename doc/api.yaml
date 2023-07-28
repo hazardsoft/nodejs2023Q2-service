@@ -581,6 +581,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid v4
         login:
           type: string
         version:
@@ -626,14 +627,17 @@ components:
       properties:
         id:
           type: string
-        name:
-          type: string
+          format: uuid v4
         artistId:
           type: string
           nullable: true
+          format: uuid v4
         albumId:
           type: string
           nullable: true
+          format: uuid v4
+        name:
+          type: string
         duration:
           type: number
       required:
@@ -645,6 +649,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid v4
         name:
           type: string
         grammy:
@@ -658,6 +663,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid v4
         name:
           type: string
         year:
