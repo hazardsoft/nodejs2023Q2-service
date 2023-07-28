@@ -8,7 +8,9 @@ import {
   Delete,
   ParseUUIDPipe,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { Track } from './entities/track.entity';
@@ -22,6 +24,10 @@ export class TrackController {
   ) {}
 
   @Post()
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'required body fields are not supplied',
+  })
   async create(@Body() createTrackDto: CreateTrackDto): Promise<Track> {
     return this.trackService.create(createTrackDto);
   }
@@ -32,11 +38,27 @@ export class TrackController {
   }
 
   @Get(':id')
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'supplied id is not UUID',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'track id is not found',
+  })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Track> {
     return this.trackService.findOne(id);
   }
 
   @Put(':id')
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'supplied id is not UUID',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'track id is not found',
+  })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTrackDto: CreateTrackDto,
@@ -46,6 +68,18 @@ export class TrackController {
 
   @HttpCode(204)
   @Delete(':id')
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'track successfully deleted',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'supplied id is not UUID',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'track id is not found',
+  })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     const removedTrack = await this.trackService.remove(id);
     if (removedTrack) {
