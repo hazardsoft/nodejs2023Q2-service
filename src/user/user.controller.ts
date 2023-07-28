@@ -77,6 +77,10 @@ export class UserController {
     description: 'user successfully deleted',
   })
   @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'supplied id is not UUID',
+  })
+  @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: 'user id is not found',
   })
