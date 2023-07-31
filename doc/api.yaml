@@ -563,7 +563,7 @@ info:
   contact: {}
 tags: []
 servers:
-  - url: /api
+  - url: /
 components:
   schemas:
     CreateUserDto:
@@ -587,9 +587,11 @@ components:
         version:
           type: number
         createdAt:
-          type: number
+          format: date-time
+          type: string
         updatedAt:
-          type: number
+          format: date-time
+          type: string
       required:
         - id
         - login

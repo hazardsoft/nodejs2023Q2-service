@@ -70,3 +70,19 @@ npm run format
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+
+## Database
+
+PostgreSQL is used for persistence, Prisma ORM is used to communicate with PostgreSQL.
+
+### Init
+
+```sh
+npx prisma migrate dev --name init
+```
+
+### Model Change
+
+```sh
+prisma generate
+```

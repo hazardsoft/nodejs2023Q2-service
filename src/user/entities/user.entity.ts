@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
 export class User {
@@ -9,6 +9,12 @@ export class User {
   @Exclude()
   password: string;
   version: number; // integer number, increments on update
-  createdAt: number; // timestamp of creation
-  updatedAt: number; // timestamp of last update
+  @Transform(({ value }) => {
+    return value instanceof Date ? value.getTime() : value;
+  })
+  createdAt: Date; // timestamp of creation
+  @Transform(({ value }) => {
+    return value instanceof Date ? value.getTime() : value;
+  })
+  updatedAt: Date; // timestamp of last update
 }
