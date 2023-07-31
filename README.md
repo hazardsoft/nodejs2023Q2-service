@@ -8,7 +8,7 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/hazardsoft/nodejs2023Q2-service
 ```
 
 ## Installing NPM modules
@@ -16,6 +16,10 @@ git clone {repository URL}
 ```
 npm install
 ```
+
+## Create .env config
+
+Rename `.env.example` to `.env`.
 
 ## Running application
 
@@ -26,6 +30,15 @@ npm start
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
+
+## Generate Swagger Docs
+
+If `NODE_ENV` is set to `development`, Swagger docs are generated and placed into `doc` folder replacing existing `api.yaml` file.
+
+E.g. you can run the following command that uses `NODE_ENV=development` env variable:
+```
+npm run start:dev
+```
 
 ## Testing
 
