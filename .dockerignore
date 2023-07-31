@@ -1,0 +1,11 @@
+node_modules
+dist
+docker
+.env
+.env.example
+.eslintrc
+.gitignore
+.dockerignore
+docker-compose.yml
+.prettierrc
+README.md

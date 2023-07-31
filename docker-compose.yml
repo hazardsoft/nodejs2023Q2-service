@@ -1,0 +1,29 @@
+services:
+  # rest-api-service:
+  #   image: hazardsoft/rest-api:latest
+  #   command: sh -c "npx prisma generate && npm run start:dev"
+  #   depends_on:
+  #     - database-service
+  #   ports:
+  #     - 127.0.0.1:4000:4000
+  #   working_dir: /app
+  #   volumes:
+  #     - ./:/app
+  #   environment:
+  #     - NODE_ENV=development
+  #     - DATABASE_URL=postgresql://hazardsoft:123456@database-service:5432/library?schema=public
+  database-service:
+    image: hazardsoft/rest-database:latest
+    ports:
+      - 127.0.0.1:5432:5432
+    environment:
+      - POSTGRES_USER=hazardsoft
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=library
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - ./prisma/migrations/20230729164410_init:/docker-entrypoint-initdb.d
+      - pg-data:/var/lib/postgresql/data
+
+volumes:
+  pg-data:
