@@ -9,6 +9,7 @@
 
 ```
 git clone https://github.com/hazardsoft/nodejs2023Q2-service
+git checkout develop
 ```
 
 ## Installing NPM modules
@@ -19,7 +20,7 @@ npm install
 
 ## Create .env config
 
-Rename `.env.example` to `.env`.
+Copy/paste `.env.example` and rename it to `.env` (`PORT` env variable is considered only at the moment)
 
 ## Running application
 
@@ -54,18 +55,6 @@ To run only one of all test suites
 
 ```
 npm run test -- <path to suite>
-```
-
-To run all test with authorization
-
-```
-npm run test:auth
-```
-
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
 ```
 
 ### Auto-fix and format
