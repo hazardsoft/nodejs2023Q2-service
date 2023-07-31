@@ -25,6 +25,7 @@ import {
   ApiOperation,
   ApiCreatedResponse,
 } from '@nestjs/swagger';
+import { config } from 'src/config';
 
 type FavCreateResponse = {
   message: string;
@@ -69,7 +70,8 @@ export class FavsController {
     description: "Track with id doesn't exist",
   })
   async createTrackFav(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
   ): Promise<FavCreateResponse> {
     try {
       const track = await this.trackService.findOne(id);
@@ -101,7 +103,10 @@ export class FavsController {
   @ApiNotFoundResponse({
     description: 'Track was not found',
   })
-  async removeTrackFav(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async removeTrackFav(
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
+  ): Promise<void> {
     await this.favsService.removeTrack(id);
   }
 
@@ -118,7 +123,8 @@ export class FavsController {
     description: "Album with id doesn't exist",
   })
   async createAlbumFav(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
   ): Promise<FavCreateResponse> {
     try {
       const album = await this.albumService.findOne(id);
@@ -150,7 +156,10 @@ export class FavsController {
   @ApiNotFoundResponse({
     description: 'Album was not found',
   })
-  async removeAlbumFav(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async removeAlbumFav(
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
+  ): Promise<void> {
     await this.favsService.removeAlbum(id);
   }
 
@@ -167,7 +176,8 @@ export class FavsController {
     description: "Artist with id doesn't exist",
   })
   async createArtistFav(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
   ): Promise<FavCreateResponse> {
     try {
       const artist = await this.artistService.findOne(id);
@@ -199,7 +209,10 @@ export class FavsController {
   @ApiNotFoundResponse({
     description: 'Artist was not found',
   })
-  async removeArtistFav(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async removeArtistFav(
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
+  ): Promise<void> {
     await this.favsService.removeArtist(id);
   }
 }

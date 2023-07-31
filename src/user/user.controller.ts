@@ -25,6 +25,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
+import { config } from 'src/config';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -62,7 +63,10 @@ export class UserController {
   @ApiNotFoundResponse({
     description: 'User not found',
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
+  async findOne(
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
+  ): Promise<User> {
     return this.userService.findOne(id);
   }
 
@@ -81,7 +85,8 @@ export class UserController {
     description: 'oldPassword is wrong',
   })
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ): Promise<User> {
     return this.userService.updatePassword(id, updatePasswordDto);
@@ -102,7 +107,10 @@ export class UserController {
   @ApiNotFoundResponse({
     description: 'User not found',
   })
-  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async remove(
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
+  ): Promise<void> {
     await this.userService.remove(id);
   }
 }

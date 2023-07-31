@@ -24,6 +24,7 @@ import {
   ApiNoContentResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { config } from 'src/config';
 
 @Controller('album')
 @ApiTags('Album')
@@ -70,7 +71,10 @@ export class AlbumController {
   @ApiNotFoundResponse({
     description: 'Album was not found',
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Album> {
+  async findOne(
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
+  ): Promise<Album> {
     return this.albumService.findOne(id);
   }
 
@@ -86,7 +90,8 @@ export class AlbumController {
     description: 'Album was not found',
   })
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
     @Body() updateArtistDto: CreateAlbumDto,
   ): Promise<Album> {
     return this.albumService.update(id, updateArtistDto);
@@ -105,7 +110,10 @@ export class AlbumController {
   @ApiNotFoundResponse({
     description: 'Album was not found',
   })
-  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async remove(
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
+  ): Promise<void> {
     const removedAlbum = await this.albumService.remove(id);
     if (removedAlbum) {
       const tracks = await this.trackService.findAll();

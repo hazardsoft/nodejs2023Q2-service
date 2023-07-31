@@ -22,6 +22,7 @@ import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { Track } from './entities/track.entity';
 import { FavsService } from 'src/favs/favs.service';
+import { config } from 'src/config';
 
 @Controller('track')
 @ApiTags('Track')
@@ -67,7 +68,10 @@ export class TrackController {
   @ApiNotFoundResponse({
     description: 'Track was not found',
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Track> {
+  async findOne(
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
+  ): Promise<Track> {
     return this.trackService.findOne(id);
   }
 
@@ -83,7 +87,8 @@ export class TrackController {
     description: 'Track was not found',
   })
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
     @Body() updateTrackDto: CreateTrackDto,
   ): Promise<Track> {
     return this.trackService.update(id, updateTrackDto);
@@ -104,7 +109,10 @@ export class TrackController {
   @ApiNotFoundResponse({
     description: 'Track was not found',
   })
-  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async remove(
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
+  ): Promise<void> {
     const removedTrack = await this.trackService.remove(id);
     if (removedTrack) {
       try {
