@@ -563,7 +563,7 @@ info:
   contact: {}
 tags: []
 servers:
-  - url: /api
+  - url: /
 components:
   schemas:
     CreateUserDto:
