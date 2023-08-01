@@ -1,10 +1,15 @@
 node_modules
 dist
 docker
+.git
+.gitignore
+.vscode
+doc
+prisma/migrations
+test
 .env
 .env.example
-.eslintrc
-.gitignore
+.eslintrc.js
 .dockerignore
 docker-compose.yml
 .prettierrc
