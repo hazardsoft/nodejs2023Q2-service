@@ -21,6 +21,19 @@ npm install
 ## Create .env config
 
 Copy/paste `.env.example` and rename it to `.env` (`PORT` env variable is considered only at the moment)
+Part of env variables are passed to `docker-compose.yml`:
+```
+# PostgreSQL configuration for "database-service" service:
+POSTGRES_USER=username
+POSTGRES_PASSWORD=123456
+POSTGRES_DB=library
+PGDATA=/var/lib/postgresql/data
+PRISMA_MIGRATION=20230729185908_init
+
+# PostgreSQL configuration for "rest-api-service" service:
+DATABASE_URL=postgresql://username:123456@database-service:5432/library?schema=public
+```
+where `PRISMA_MIGRATION` is a folder name containing latest Prisma migration, e.g. `20230729185908_init` in `./prisma/migrations/20230729185908_init`. PostgreSQL executes `migration.sql` upon database start (creates db tables with relations).
 
 ## Running application
 
