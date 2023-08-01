@@ -26,6 +26,7 @@ import {
   ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { config } from 'src/config';
+import { StatusCodes } from 'http-status-codes';
 
 type FavCreateResponse = {
   message: string;
@@ -88,7 +89,7 @@ export class FavsController {
     }
   }
 
-  @HttpCode(204)
+  @HttpCode(StatusCodes.NO_CONTENT)
   @Delete('/track/:id')
   @ApiOperation({
     summary: 'Delete track from favorites',
@@ -141,7 +142,7 @@ export class FavsController {
     }
   }
 
-  @HttpCode(204)
+  @HttpCode(StatusCodes.NO_CONTENT)
   @Delete('/album/:id')
   @ApiOperation({
     summary: 'Delete album from favorites',
@@ -194,7 +195,7 @@ export class FavsController {
     }
   }
 
-  @HttpCode(204)
+  @HttpCode(StatusCodes.NO_CONTENT)
   @Delete('/artist/:id')
   @ApiOperation({
     summary: 'Delete artist from favorites',

@@ -26,6 +26,7 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { config } from 'src/config';
+import { StatusCodes } from 'http-status-codes';
 
 @Controller('artist')
 @ApiTags('Artist')
@@ -93,7 +94,7 @@ export class ArtistController {
     return this.artistService.update(id, updateArtistDto);
   }
 
-  @HttpCode(204)
+  @HttpCode(StatusCodes.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({
     summary: 'Delete artist',

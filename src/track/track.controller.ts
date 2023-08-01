@@ -23,6 +23,7 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { Track } from './entities/track.entity';
 import { FavsService } from 'src/favs/favs.service';
 import { config } from 'src/config';
+import { StatusCodes } from 'http-status-codes';
 
 @Controller('track')
 @ApiTags('Track')
@@ -94,7 +95,7 @@ export class TrackController {
     return this.trackService.update(id, updateTrackDto);
   }
 
-  @HttpCode(204)
+  @HttpCode(StatusCodes.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({
     summary: 'Delete track',

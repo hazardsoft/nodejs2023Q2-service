@@ -26,6 +26,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
 import { config } from 'src/config';
+import { StatusCodes } from 'http-status-codes';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -92,7 +93,7 @@ export class UserController {
     return this.userService.updatePassword(id, updatePasswordDto);
   }
 
-  @HttpCode(204)
+  @HttpCode(StatusCodes.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({
     summary: 'Delete user',
