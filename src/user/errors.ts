@@ -10,9 +10,3 @@ export class IncorrectPasswordError extends HttpException {
     super('incorrect password', HttpStatus.FORBIDDEN);
   }
 }
-
-export class InvalidUserId extends HttpException {
-  constructor(userId: string) {
-    super(`id ${userId} is not valid uuid`, HttpStatus.BAD_REQUEST);
-  }
-}
