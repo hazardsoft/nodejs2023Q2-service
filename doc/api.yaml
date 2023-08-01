@@ -582,22 +582,24 @@ components:
         id:
           type: string
           format: uuid v4
-        login:
-          type: string
         version:
           type: number
+          minimum: 1
+          example: 1
         createdAt:
-          format: date-time
-          type: string
+          type: number
+          example: 1655000000
         updatedAt:
-          format: date-time
+          type: number
+          example: 1655000000
+        login:
           type: string
       required:
         - id
-        - login
         - version
         - createdAt
         - updatedAt
+        - login
     UpdatePasswordDto:
       type: object
       properties:
@@ -621,8 +623,11 @@ components:
           nullable: true
         duration:
           type: number
+          minimum: 1
       required:
         - name
+        - artistId
+        - albumId
         - duration
     Track:
       type: object
@@ -630,6 +635,9 @@ components:
         id:
           type: string
           format: uuid v4
+        name:
+          type: string
+          example: The Show Must Go On
         artistId:
           type: string
           nullable: true
@@ -638,13 +646,16 @@ components:
           type: string
           nullable: true
           format: uuid v4
-        name:
-          type: string
         duration:
-          type: number
+          type: integer
+          description: In seconds
+          example: 262
+          minimum: 1
       required:
         - id
         - name
+        - artistId
+        - albumId
         - duration
     Artist:
       type: object
@@ -654,8 +665,11 @@ components:
           format: uuid v4
         name:
           type: string
+          example: Freddie Mercury
         grammy:
           type: boolean
+          example: false
+          default: false
       required:
         - id
         - name
@@ -668,15 +682,19 @@ components:
           format: uuid v4
         name:
           type: string
+          example: Innuendo
         year:
-          type: number
+          type: integer
+          example: 1991
         artistId:
           type: string
           nullable: true
+          format: uuid v4
       required:
         - id
         - name
         - year
+        - artistId
     Favorites:
       type: object
       properties:
@@ -719,3 +737,4 @@ components:
       required:
         - name
         - year
+        - artistId

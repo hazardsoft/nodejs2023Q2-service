@@ -25,6 +25,7 @@ import {
   ApiCreatedResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { config } from 'src/config';
 
 @Controller('artist')
 @ApiTags('Artist')
@@ -66,7 +67,10 @@ export class ArtistController {
   @ApiNotFoundResponse({
     description: 'Artist was not found',
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Artist> {
+  async findOne(
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
+  ): Promise<Artist> {
     return this.artistService.findOne(id);
   }
 
@@ -82,7 +86,8 @@ export class ArtistController {
     description: 'Artist was not found',
   })
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
     @Body() updateArtistDto: CreateArtistDto,
   ): Promise<Artist> {
     return this.artistService.update(id, updateArtistDto);
@@ -100,7 +105,10 @@ export class ArtistController {
   @ApiNotFoundResponse({
     description: 'Artist was not found',
   })
-  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async remove(
+    @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
+    id: string,
+  ): Promise<void> {
     const removedArtist = await this.artistService.remove(id);
     if (removedArtist) {
       const tracks = await this.trackService.findAll();
