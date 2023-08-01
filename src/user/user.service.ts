@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
-import { IncorrectPasswordError, UserNotFoundError } from './errors';
 import { PrismaService } from 'src/prisma.service';
 import { plainToInstance } from 'class-transformer';
 
@@ -14,59 +13,43 @@ export class UserService {
     const rawUser = await this.prismaService.user.create({
       data: createUserDto,
     });
-    const user = plainToInstance(User, rawUser);
-    return user;
+    return rawUser ? plainToInstance(User, rawUser) : null;
   }
 
   async findAll(): Promise<User[]> {
-    return this.prismaService.user.findMany();
+    const rawUsers = await this.prismaService.user.findMany();
+    return rawUsers.map((u) => plainToInstance(User, u));
   }
 
   async findOne(id: string): Promise<User | undefined> {
-    try {
-      const user = await this.prismaService.user.findUnique({
-        where: {
-          id,
-        },
-      });
-      return user;
-    } catch (e) {
-      throw new UserNotFoundError(id);
-    }
-    return undefined;
+    const rawUser = await this.prismaService.user.findUnique({
+      where: {
+        id,
+      },
+    });
+    return rawUser ? plainToInstance(User, rawUser) : undefined;
   }
 
   async updatePassword(
     id: string,
     updatePasswordDto: UpdatePasswordDto,
   ): Promise<User | undefined> {
-    try {
-      const user = await this.prismaService.user.update({
-        where: {
-          id,
-          password: updatePasswordDto.oldPassword,
-        },
-        data: updatePasswordDto,
-      });
-      return user;
-    } catch (e) {
-      throw new UserNotFoundError(id);
-      throw new IncorrectPasswordError();
-    }
-    return undefined;
+    const rawUser = await this.prismaService.user.update({
+      where: {
+        id,
+        password: updatePasswordDto.oldPassword,
+      },
+      data: updatePasswordDto,
+    });
+    return rawUser ? plainToInstance(User, rawUser) : undefined;
   }
 
   async remove(id: string): Promise<User | undefined> {
-    try {
-      const removedUser = await this.prismaService.user.delete({
-        where: {
-          id,
-        },
-      });
-      return removedUser;
-    } catch (e) {
-      throw new UserNotFoundError(id);
-    }
-    return undefined;
+    const rawUser = await this.prismaService.user.delete({
+      where: {
+        id,
+      },
+    });
+    return rawUser ? plainToInstance(User, rawUser) : undefined;
   }
 }
