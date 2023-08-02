@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { Artist, PrismaClient, Track, User } from '@prisma/client';
+import { Album, Artist, PrismaClient, Track, User } from '@prisma/client';
+import { CreateAlbumDto } from 'src/album/dto/create-album.dto';
 import { CreateArtistDto } from 'src/artist/dto/create-artist.dto';
 import { CreateTrackDto } from 'src/track/dto/create-track.dto';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
@@ -35,6 +36,14 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     });
   }
 
+  async findAlbum(id: string): Promise<Album> {
+    return await this.album.findUniqueOrThrow({
+      where: {
+        id,
+      },
+    });
+  }
+
   async findUsers(): Promise<User[]> {
     return await this.user.findMany();
   }
@@ -45,6 +54,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   async findArtists(): Promise<Artist[]> {
     return await this.artist.findMany();
+  }
+
+  async findAlbums(): Promise<Album[]> {
+    return await this.album.findMany();
   }
 
   async createUser(createDto: CreateUserDto): Promise<User> {
@@ -61,6 +74,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   async createArtist(createDto: CreateArtistDto): Promise<Artist> {
     return await this.artist.create({
+      data: createDto,
+    });
+  }
+
+  async createAlbum(createDto: CreateAlbumDto): Promise<Album> {
+    return await this.album.create({
       data: createDto,
     });
   }
@@ -101,6 +120,15 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     });
   }
 
+  async updateAlbum(id: string, updateDto: CreateAlbumDto): Promise<Album> {
+    return await this.album.update({
+      where: {
+        id,
+      },
+      data: updateDto,
+    });
+  }
+
   async removeUser(id: string): Promise<User> {
     return await this.user.delete({
       where: {
@@ -119,6 +147,14 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   async removeArtist(id: string): Promise<Artist> {
     return await this.artist.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async removeAlbum(id: string): Promise<Album> {
+    return await this.album.delete({
       where: {
         id,
       },
