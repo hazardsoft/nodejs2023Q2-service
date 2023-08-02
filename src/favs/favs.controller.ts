@@ -11,7 +11,6 @@ import { FavsService } from './favs.service';
 import { TrackService } from 'src/track/track.service';
 import { AlbumService } from 'src/album/album.service';
 import { ArtistService } from 'src/artist/artist.service';
-import { TrackNotFoundError } from 'src/track/errors';
 import { InvalidFavId } from './errors';
 import { AlbumNotFoundError } from 'src/album/errors';
 import { ArtistNotFoundError } from 'src/artist/errors';
@@ -74,18 +73,12 @@ export class FavsController {
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
   ): Promise<FavCreateResponse> {
-    try {
-      const track = await this.trackService.findOne(id);
-      const isTrackCreated = await this.favsService.createTrack(track?.id);
-      if (isTrackCreated) {
-        return {
-          message: `track fav (id ${id}) is created`,
-        };
-      }
-    } catch (e) {
-      if (e instanceof TrackNotFoundError) {
-        throw new InvalidFavId(id, 'track');
-      }
+    const track = await this.trackService.findOne(id);
+    const isTrackCreated = await this.favsService.createTrack(track?.id);
+    if (isTrackCreated) {
+      return {
+        message: `track fav (id ${id}) is created`,
+      };
     }
   }
 

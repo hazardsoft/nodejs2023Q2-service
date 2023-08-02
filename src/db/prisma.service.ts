@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient, Track, User } from '@prisma/client';
+import { CreateTrackDto } from 'src/track/dto/create-track.dto';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UpdatePasswordDto } from 'src/user/dto/update-password.dto';
 
@@ -9,8 +10,16 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.$connect();
   }
 
-  async findUser(id: string): Promise<User | undefined> {
+  async findUser(id: string): Promise<User> {
     return await this.user.findUniqueOrThrow({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async findTrack(id: string): Promise<Track> {
+    return await this.track.findFirstOrThrow({
       where: {
         id,
       },
@@ -21,8 +30,18 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     return await this.user.findMany();
   }
 
-  async createUser(createDto: CreateUserDto): Promise<User | undefined> {
+  async findTracks(): Promise<Track[]> {
+    return await this.track.findMany();
+  }
+
+  async createUser(createDto: CreateUserDto): Promise<User> {
     return await this.user.create({
+      data: createDto,
+    });
+  }
+
+  async createTrack(createDto: CreateTrackDto): Promise<Track> {
+    return await this.track.create({
       data: createDto,
     });
   }
@@ -45,8 +64,25 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     });
   }
 
-  async removeUser(id: string): Promise<User | undefined> {
+  async updateTrack(id: string, updateDto: CreateTrackDto): Promise<Track> {
+    return await this.track.update({
+      where: {
+        id,
+      },
+      data: updateDto,
+    });
+  }
+
+  async removeUser(id: string): Promise<User> {
     return await this.user.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async removeTrack(id: string): Promise<Track> {
+    return await this.track.delete({
       where: {
         id,
       },
