@@ -1,53 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { Artist } from './entities/artist.entity';
-import { ArtistNotFoundError } from './errors';
+import { plainToInstance } from 'class-transformer';
+import { PrismaService } from 'src/db/prisma.service';
 
 @Injectable()
 export class ArtistService {
-  private readonly artists: Artist[] = [];
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(createArtistDto: CreateArtistDto): Promise<Artist> {
-    const artist = new Artist();
-    artist.id = uuidv4();
-    Object.assign(artist, createArtistDto);
-
-    this.artists.push(artist);
-    return artist;
+    return plainToInstance(
+      Artist,
+      await this.prismaService.createArtist(createArtistDto),
+    );
   }
 
   async findAll(): Promise<Artist[]> {
-    return this.artists.slice();
+    return plainToInstance(Artist, await this.prismaService.findArtists());
   }
 
-  async findOne(id: string): Promise<Artist | undefined> {
-    const artist = this.artists.find((a) => a.id === id);
-    if (!artist) {
-      throw new ArtistNotFoundError(id);
-    }
-    return artist;
+  async findOne(id: string): Promise<Artist> {
+    return plainToInstance(Artist, await this.prismaService.findArtist(id));
   }
 
-  async update(
-    id: string,
-    updateArtistDto: CreateArtistDto,
-  ): Promise<Artist | undefined> {
-    const artist = this.artists.find((a) => a.id === id);
-    if (!artist) {
-      throw new ArtistNotFoundError(id);
-    }
-    Object.assign(artist, updateArtistDto);
-    return artist;
+  async update(id: string, updateArtistDto: CreateArtistDto): Promise<Artist> {
+    return plainToInstance(
+      Artist,
+      await this.prismaService.updateArtist(id, updateArtistDto),
+    );
   }
 
-  async remove(id: string): Promise<Artist | undefined> {
-    const foundIndex = this.artists.findIndex((u) => u.id === id);
-    if (foundIndex === -1) {
-      throw new ArtistNotFoundError(id);
-    }
-    const artist = this.artists.splice(foundIndex, 1).shift();
-
-    return artist;
+  async remove(id: string): Promise<Artist> {
+    return plainToInstance(Artist, await this.prismaService.removeArtist(id));
   }
 }

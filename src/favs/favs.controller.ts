@@ -13,7 +13,6 @@ import { AlbumService } from 'src/album/album.service';
 import { ArtistService } from 'src/artist/artist.service';
 import { InvalidFavId } from './errors';
 import { AlbumNotFoundError } from 'src/album/errors';
-import { ArtistNotFoundError } from 'src/artist/errors';
 import { Favorites } from './entities/fav.entity';
 import {
   ApiBadRequestResponse,
@@ -173,18 +172,12 @@ export class FavsController {
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
   ): Promise<FavCreateResponse> {
-    try {
-      const artist = await this.artistService.findOne(id);
-      const isArtistCreated = await this.favsService.createArtist(artist?.id);
-      if (isArtistCreated) {
-        return {
-          message: `artist fav (id ${id}) is created`,
-        };
-      }
-    } catch (e) {
-      if (e instanceof ArtistNotFoundError) {
-        throw new InvalidFavId(id, 'album');
-      }
+    const artist = await this.artistService.findOne(id);
+    const isArtistCreated = await this.favsService.createArtist(artist?.id);
+    if (isArtistCreated) {
+      return {
+        message: `artist fav (id ${id}) is created`,
+      };
     }
   }
 

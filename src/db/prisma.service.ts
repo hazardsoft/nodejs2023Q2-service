@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { PrismaClient, Track, User } from '@prisma/client';
+import { Artist, PrismaClient, Track, User } from '@prisma/client';
+import { CreateArtistDto } from 'src/artist/dto/create-artist.dto';
 import { CreateTrackDto } from 'src/track/dto/create-track.dto';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UpdatePasswordDto } from 'src/user/dto/update-password.dto';
@@ -19,7 +20,15 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   async findTrack(id: string): Promise<Track> {
-    return await this.track.findFirstOrThrow({
+    return await this.track.findUniqueOrThrow({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async findArtist(id: string): Promise<Artist> {
+    return await this.artist.findUniqueOrThrow({
       where: {
         id,
       },
@@ -34,6 +43,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     return await this.track.findMany();
   }
 
+  async findArtists(): Promise<Artist[]> {
+    return await this.artist.findMany();
+  }
+
   async createUser(createDto: CreateUserDto): Promise<User> {
     return await this.user.create({
       data: createDto,
@@ -42,6 +55,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   async createTrack(createDto: CreateTrackDto): Promise<Track> {
     return await this.track.create({
+      data: createDto,
+    });
+  }
+
+  async createArtist(createDto: CreateArtistDto): Promise<Artist> {
+    return await this.artist.create({
       data: createDto,
     });
   }
@@ -73,6 +92,15 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     });
   }
 
+  async updateArtist(id: string, updateDto: CreateArtistDto): Promise<Artist> {
+    return await this.artist.update({
+      where: {
+        id,
+      },
+      data: updateDto,
+    });
+  }
+
   async removeUser(id: string): Promise<User> {
     return await this.user.delete({
       where: {
@@ -83,6 +111,14 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   async removeTrack(id: string): Promise<Track> {
     return await this.track.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async removeArtist(id: string): Promise<Artist> {
+    return await this.artist.delete({
       where: {
         id,
       },
