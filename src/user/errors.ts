@@ -1,12 +1,7 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+export class UserError extends Error {}
 
-export class UserNotFoundError extends HttpException {
-  constructor(userId: string) {
-    super(`user (id ${userId}) not found`, HttpStatus.NOT_FOUND);
-  }
-}
-export class IncorrectPasswordError extends HttpException {
+export class IncorrectPasswordError extends UserError {
   constructor() {
-    super('incorrect password', HttpStatus.FORBIDDEN);
+    super('incorrect password');
   }
 }

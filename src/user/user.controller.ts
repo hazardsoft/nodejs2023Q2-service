@@ -9,6 +9,7 @@ import {
   HttpCode,
   ParseUUIDPipe,
   UseInterceptors,
+  UseFilters,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 import {
@@ -27,9 +28,11 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
 import { config } from 'src/config';
 import { StatusCodes } from 'http-status-codes';
+import { UserExceptionFilter } from './filters/user.exception.filter';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
+@UseFilters(UserExceptionFilter)
 @ApiTags('User')
 export class UserController {
   constructor(private readonly userService: UserService) {}
