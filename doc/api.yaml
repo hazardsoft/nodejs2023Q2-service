@@ -1,5 +1,14 @@
 openapi: 3.0.0
 paths:
+  /stop:
+    post:
+      operationId: stopApplication
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+        - Utils
   /user:
     post:
       operationId: create

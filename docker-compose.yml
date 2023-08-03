@@ -10,6 +10,7 @@ services:
       - library
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database-service:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+    restart: on-failure:5
   database-service:
     image: hazardsoft/rest-database:latest
     ports:

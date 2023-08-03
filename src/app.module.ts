@@ -6,6 +6,7 @@ import { ArtistModule } from './artist/artist.module';
 import { AlbumModule } from './album/album.module';
 import { FavsModule } from './favs/favs.module';
 import { DbModule } from './db/db.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -17,5 +18,6 @@ import { DbModule } from './db/db.module';
     FavsModule,
     DbModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

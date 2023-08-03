@@ -1,4 +1,4 @@
-FROM node:18-slim as build-stage
+FROM node:18-alpine as build-stage
 WORKDIR /app
 COPY ["package.json", "package-lock.json", "./"]
 RUN npm ci

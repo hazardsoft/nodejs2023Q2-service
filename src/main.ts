@@ -40,5 +40,9 @@ async function bootstrap() {
   app.useGlobalFilters(new PrismaExceptionFilter(httpAdapter));
 
   await app.listen(port);
+
+  process.on('exit', () => {
+    console.warn('application exited!');
+  });
 }
 bootstrap();
