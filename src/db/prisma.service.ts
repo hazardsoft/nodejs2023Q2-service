@@ -248,11 +248,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   async removeFavoriteTrack(id: string): Promise<Favorites> {
-    const favorites = await this.favorites.findUniqueOrThrow({
-      where: {
-        id: favoritesEntityId,
-      },
-    });
+    const favorites = await this.findFavorites();
     const tracksIds = favorites.tracks;
 
     return await this.favorites.update({
@@ -268,11 +264,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   async removeFavoriteAlbum(id: string): Promise<Favorites> {
-    const favorites = await this.favorites.findUniqueOrThrow({
-      where: {
-        id: favoritesEntityId,
-      },
-    });
+    const favorites = await this.findFavorites();
     const albumIds = favorites.albums;
 
     return await this.favorites.update({
@@ -288,11 +280,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   async removeFavoriteArtist(id: string): Promise<Favorites> {
-    const favorites = await this.favorites.findUniqueOrThrow({
-      where: {
-        id: favoritesEntityId,
-      },
-    });
+    const favorites = await this.findFavorites();
     const artistIds = favorites.artists;
 
     return await this.favorites.update({

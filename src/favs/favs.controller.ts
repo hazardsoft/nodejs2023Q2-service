@@ -21,7 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { config } from 'src/config';
 import { StatusCodes } from 'http-status-codes';
-import { FavsExceptionFilter } from './filters/favs.exception.filter.filter';
+import { FavsExceptionFilter } from './filters/favs.exception.filter';
 
 type FavCreateResponse = {
   message: string;

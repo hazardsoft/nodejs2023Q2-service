@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Favorites, FavoritesIds } from './entities/fav.entity';
 import { PrismaService } from 'src/db/prisma.service';
 import { plainToInstance } from 'class-transformer';
-import { FavoritesDoesNotExist } from './errors';
+import { FavoritesCreateError, FavoritesDeleteError } from './errors';
 
 @Injectable()
 export class FavsService {
@@ -27,7 +27,7 @@ export class FavsService {
     try {
       await this.prismaService.findTrack(id);
     } catch (e) {
-      throw new FavoritesDoesNotExist();
+      throw new FavoritesCreateError();
     }
 
     return plainToInstance(
@@ -40,7 +40,7 @@ export class FavsService {
     try {
       await this.prismaService.findAlbum(id);
     } catch (e) {
-      throw new FavoritesDoesNotExist();
+      throw new FavoritesCreateError();
     }
 
     return plainToInstance(
@@ -53,7 +53,7 @@ export class FavsService {
     try {
       await this.prismaService.findArtist(id);
     } catch (e) {
-      throw new FavoritesDoesNotExist();
+      throw new FavoritesCreateError();
     }
 
     return plainToInstance(
@@ -63,6 +63,11 @@ export class FavsService {
   }
 
   async removeTrack(id: string): Promise<FavoritesIds> {
+    const favorites = await this.prismaService.findFavorites();
+    if (!favorites.tracks.includes(id)) {
+      throw new FavoritesDeleteError();
+    }
+
     return plainToInstance(
       FavoritesIds,
       await this.prismaService.removeFavoriteTrack(id),
@@ -70,6 +75,11 @@ export class FavsService {
   }
 
   async removeAlbum(id: string): Promise<FavoritesIds> {
+    const favorites = await this.prismaService.findFavorites();
+    if (!favorites.albums.includes(id)) {
+      throw new FavoritesDeleteError();
+    }
+
     return plainToInstance(
       FavoritesIds,
       await this.prismaService.removeFavoriteAlbum(id),
@@ -77,6 +87,11 @@ export class FavsService {
   }
 
   async removeArtist(id: string): Promise<FavoritesIds> {
+    const favorites = await this.prismaService.findFavorites();
+    if (!favorites.artists.includes(id)) {
+      throw new FavoritesDeleteError();
+    }
+
     return plainToInstance(
       FavoritesIds,
       await this.prismaService.removeFavoriteArtist(id),
