@@ -42,7 +42,7 @@ CREATE TABLE "Album" (
 
 -- CreateTable
 CREATE TABLE "Favorites" (
-    "id" SERIAL NOT NULL,
+    "id" INTEGER NOT NULL DEFAULT 1,
     "artists" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "albums" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "tracks" TEXT[] DEFAULT ARRAY[]::TEXT[],

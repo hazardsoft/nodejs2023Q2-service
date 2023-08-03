@@ -4,7 +4,6 @@ docker
 .git
 .gitignore
 .vscode
-doc
 prisma/migrations
 test
 .env
