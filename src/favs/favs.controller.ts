@@ -6,11 +6,9 @@ import {
   Delete,
   ParseUUIDPipe,
   HttpCode,
+  UseFilters,
 } from '@nestjs/common';
 import { FavsService } from './favs.service';
-import { TrackService } from 'src/track/track.service';
-import { AlbumService } from 'src/album/album.service';
-import { ArtistService } from 'src/artist/artist.service';
 import { Favorites } from './entities/fav.entity';
 import {
   ApiBadRequestResponse,
@@ -23,19 +21,17 @@ import {
 } from '@nestjs/swagger';
 import { config } from 'src/config';
 import { StatusCodes } from 'http-status-codes';
+import { FavsExceptionFilter } from './filters/favs.exception.filter.filter';
 
 type FavCreateResponse = {
   message: string;
 };
+
 @Controller('favs')
+@UseFilters(FavsExceptionFilter)
 @ApiTags('Favs')
 export class FavsController {
-  constructor(
-    private readonly favsService: FavsService,
-    private readonly trackService: TrackService,
-    private readonly artistService: ArtistService,
-    private readonly albumService: AlbumService,
-  ) {}
+  constructor(private readonly favsService: FavsService) {}
 
   @Get()
   @ApiOperation({
@@ -43,15 +39,7 @@ export class FavsController {
     description: 'Gets all favorites movies, tracks and books',
   })
   async findAll(): Promise<Favorites> {
-    const favs = await this.favsService.findAll();
-    const artists = await this.artistService.findAll();
-    const albums = await this.albumService.findAll();
-    const tracks = await this.trackService.findAll();
-    return {
-      artists: artists.filter((a) => favs.artists.includes(a.id)),
-      albums: albums.filter((a) => favs.albums.includes(a.id)),
-      tracks: tracks.filter((t) => favs.tracks.includes(t.id)),
-    };
+    return await this.favsService.findAll();
   }
 
   @Post('/track/:id')
@@ -70,13 +58,10 @@ export class FavsController {
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
   ): Promise<FavCreateResponse> {
-    const track = await this.trackService.findOne(id);
-    const isTrackCreated = await this.favsService.createTrack(track?.id);
-    if (isTrackCreated) {
-      return {
-        message: `track fav (id ${id}) is created`,
-      };
-    }
+    await this.favsService.createTrack(id);
+    return {
+      message: `track fav (id ${id}) is created`,
+    };
   }
 
   @HttpCode(StatusCodes.NO_CONTENT)
@@ -117,13 +102,10 @@ export class FavsController {
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
   ): Promise<FavCreateResponse> {
-    const album = await this.albumService.findOne(id);
-    const isAlbumCreated = await this.favsService.createAlbum(album?.id);
-    if (isAlbumCreated) {
-      return {
-        message: `album fav (id ${id}) is created`,
-      };
-    }
+    await this.favsService.createAlbum(id);
+    return {
+      message: `album fav (id ${id}) is created`,
+    };
   }
 
   @HttpCode(StatusCodes.NO_CONTENT)
@@ -164,13 +146,10 @@ export class FavsController {
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
   ): Promise<FavCreateResponse> {
-    const artist = await this.artistService.findOne(id);
-    const isArtistCreated = await this.favsService.createArtist(artist?.id);
-    if (isArtistCreated) {
-      return {
-        message: `artist fav (id ${id}) is created`,
-      };
-    }
+    await this.favsService.createArtist(id);
+    return {
+      message: `artist fav (id ${id}) is created`,
+    };
   }
 
   @HttpCode(StatusCodes.NO_CONTENT)

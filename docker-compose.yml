@@ -5,7 +5,7 @@ services:
   #   depends_on:
   #     - database-service
   #   ports:
-  #     - 4000:4000
+  #     - ${PORT}:${PORT}
   #   working_dir: /app
   #   volumes:
   #     - ./:/app

@@ -3,10 +3,14 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { Artist } from './entities/artist.entity';
 import { plainToInstance } from 'class-transformer';
 import { PrismaService } from 'src/db/prisma.service';
+import { FavsService } from 'src/favs/favs.service';
 
 @Injectable()
 export class ArtistService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly favoritesService: FavsService,
+  ) {}
 
   async create(createArtistDto: CreateArtistDto): Promise<Artist> {
     return plainToInstance(
@@ -31,6 +35,10 @@ export class ArtistService {
   }
 
   async remove(id: string): Promise<Artist> {
+    try {
+      await this.favoritesService.removeArtist(id);
+    } catch (e) {}
+
     return plainToInstance(Artist, await this.prismaService.removeArtist(id));
   }
 }

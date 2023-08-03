@@ -3,10 +3,14 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { Track } from './entities/track.entity';
 import { PrismaService } from 'src/db/prisma.service';
 import { plainToInstance } from 'class-transformer';
+import { FavsService } from 'src/favs/favs.service';
 
 @Injectable()
 export class TrackService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly favoritesService: FavsService,
+  ) {}
 
   async create(createTrackDto: CreateTrackDto): Promise<Track> {
     return plainToInstance(
@@ -31,6 +35,10 @@ export class TrackService {
   }
 
   async remove(id: string): Promise<Track> {
+    try {
+      await this.favoritesService.removeTrack(id);
+    } catch (e) {}
+
     return plainToInstance(Track, await this.prismaService.removeTrack(id));
   }
 }

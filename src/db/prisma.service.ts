@@ -1,10 +1,19 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { Album, Artist, PrismaClient, Track, User } from '@prisma/client';
+import {
+  Album,
+  Artist,
+  Favorites,
+  PrismaClient,
+  Track,
+  User,
+} from '@prisma/client';
 import { CreateAlbumDto } from 'src/album/dto/create-album.dto';
 import { CreateArtistDto } from 'src/artist/dto/create-artist.dto';
 import { CreateTrackDto } from 'src/track/dto/create-track.dto';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UpdatePasswordDto } from 'src/user/dto/update-password.dto';
+
+const favoritesEntityId = 1;
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -60,6 +69,44 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     return await this.album.findMany();
   }
 
+  async findFavorites(): Promise<Favorites> {
+    return await this.favorites.findUniqueOrThrow({
+      where: {
+        id: favoritesEntityId,
+      },
+    });
+  }
+
+  async findSomeTracks(ids: string[]): Promise<Track[]> {
+    return await this.track.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
+
+  async findSomeArtists(ids: string[]): Promise<Artist[]> {
+    return await this.artist.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
+
+  async findSomeAlbums(ids: string[]): Promise<Album[]> {
+    return await this.album.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
+
   async createUser(createDto: CreateUserDto): Promise<User> {
     return await this.user.create({
       data: createDto,
@@ -81,6 +128,45 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   async createAlbum(createDto: CreateAlbumDto): Promise<Album> {
     return await this.album.create({
       data: createDto,
+    });
+  }
+
+  async createFavoriteTrack(id: string): Promise<Favorites> {
+    return await this.favorites.update({
+      where: {
+        id: favoritesEntityId,
+      },
+      data: {
+        tracks: {
+          push: id,
+        },
+      },
+    });
+  }
+
+  async createFavoriteAlbum(id: string): Promise<Favorites> {
+    return await this.favorites.update({
+      where: {
+        id: favoritesEntityId,
+      },
+      data: {
+        albums: {
+          push: id,
+        },
+      },
+    });
+  }
+
+  async createFavoriteArtist(id: string): Promise<Favorites> {
+    return await this.favorites.update({
+      where: {
+        id: favoritesEntityId,
+      },
+      data: {
+        artists: {
+          push: id,
+        },
+      },
     });
   }
 
@@ -157,6 +243,66 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     return await this.album.delete({
       where: {
         id,
+      },
+    });
+  }
+
+  async removeFavoriteTrack(id: string): Promise<Favorites> {
+    const favorites = await this.favorites.findUniqueOrThrow({
+      where: {
+        id: favoritesEntityId,
+      },
+    });
+    const tracksIds = favorites.tracks;
+
+    return await this.favorites.update({
+      where: {
+        id: favoritesEntityId,
+      },
+      data: {
+        tracks: {
+          set: tracksIds.filter((t) => t !== id),
+        },
+      },
+    });
+  }
+
+  async removeFavoriteAlbum(id: string): Promise<Favorites> {
+    const favorites = await this.favorites.findUniqueOrThrow({
+      where: {
+        id: favoritesEntityId,
+      },
+    });
+    const albumIds = favorites.albums;
+
+    return await this.favorites.update({
+      where: {
+        id: favoritesEntityId,
+      },
+      data: {
+        albums: {
+          set: albumIds.filter((a) => a !== id),
+        },
+      },
+    });
+  }
+
+  async removeFavoriteArtist(id: string): Promise<Favorites> {
+    const favorites = await this.favorites.findUniqueOrThrow({
+      where: {
+        id: favoritesEntityId,
+      },
+    });
+    const artistIds = favorites.artists;
+
+    return await this.favorites.update({
+      where: {
+        id: favoritesEntityId,
+      },
+      data: {
+        artists: {
+          set: artistIds.filter((a) => a !== id),
+        },
       },
     });
   }

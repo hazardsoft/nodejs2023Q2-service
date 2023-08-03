@@ -53,7 +53,7 @@ model Album {
 
 model Favorites {
   id      Int      @id @default(autoincrement())
-  artists String[]
-  albums  String[]
-  tracks  String[]
+  artists String[] @default([])
+  albums  String[] @default([])
+  tracks  String[] @default([])
 }

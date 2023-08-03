@@ -12,9 +12,6 @@ import {
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { Artist } from './entities/artist.entity';
-import { AlbumService } from 'src/album/album.service';
-import { CreateAlbumDto } from 'src/album/dto/create-album.dto';
-import { FavsService } from 'src/favs/favs.service';
 import {
   ApiBadRequestResponse,
   ApiNotFoundResponse,
@@ -29,11 +26,7 @@ import { StatusCodes } from 'http-status-codes';
 @Controller('artist')
 @ApiTags('Artist')
 export class ArtistController {
-  constructor(
-    private readonly artistService: ArtistService,
-    private readonly albumService: AlbumService,
-    private readonly favsService: FavsService,
-  ) {}
+  constructor(private readonly artistService: ArtistService) {}
 
   @Post()
   @ApiOperation({ summary: 'Add new artist', description: 'Add new artist' })
@@ -107,22 +100,6 @@ export class ArtistController {
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
   ): Promise<void> {
-    const removedArtist = await this.artistService.remove(id);
-    if (removedArtist) {
-      const albums = await this.albumService.findAll();
-      const albumsToUpdate = albums.filter(
-        (a) => a.artistId === removedArtist.id,
-      );
-      albumsToUpdate.forEach((a) => {
-        const albumUpdateDto = Object.assign({ ...a }, <
-          Partial<CreateAlbumDto>
-        >{ artistId: null });
-        this.albumService.update(a.id, albumUpdateDto);
-      });
-
-      try {
-        await this.favsService.removeArtist(removedArtist.id);
-      } catch (e) {}
-    }
+    await this.artistService.remove(id);
   }
 }
