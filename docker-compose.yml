@@ -23,8 +23,9 @@ services:
     networks:
       - library
     volumes:
-      - ./prisma/migrations/${PRISMA_MIGRATION}:/docker-entrypoint-initdb.d
       - pg-data:${PGDATA}
+      - ${PWD}/prisma/migrations/${PRISMA_MIGRATION}:/docker-entrypoint-initdb.d
+      - ${PWD}/postgresql/postgresql.conf:${PGDATA}/postgresql.conf
 
 volumes:
   pg-data:
