@@ -22,6 +22,7 @@ npm install
 
 Copy/paste `.env.example` and rename it to `.env` (`PORT` env variable is considered only at the moment)
 Part of env variables are passed to `docker-compose.yml`:
+
 ```
 # PostgreSQL configuration for "database-service" service:
 POSTGRES_USER=username
@@ -33,6 +34,7 @@ PRISMA_MIGRATION=20230729185908_init
 # PostgreSQL configuration for "rest-api-service" service:
 DATABASE_URL=postgresql://username:123456@database-service:5432/library?schema=public
 ```
+
 where `PRISMA_MIGRATION` is a folder name containing latest Prisma migration, e.g. `20230729185908_init` in `./prisma/migrations/20230729185908_init`. PostgreSQL executes `migration.sql` upon database start (creates db tables with relations).
 
 ## Running application
@@ -47,11 +49,11 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ## Generate Swagger Docs
 
-If `NODE_ENV` is set to `development`, Swagger docs are generated and placed into `doc` folder replacing existing `api.yaml` file.
+If environment variable `GEN_DOCS=1` is set, Swagger docs are generated and placed into `doc` folder replacing existing `api.yaml` file.
+E.g. you can run the following command that uses `GEN_DOCS=1` environment variable (can not be used inside of docker container):
 
-E.g. you can run the following command that uses `NODE_ENV=development` env variable:
 ```
-npm run start:dev
+npm run start:dev:docs
 ```
 
 ## Testing

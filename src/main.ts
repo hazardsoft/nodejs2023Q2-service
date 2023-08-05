@@ -25,7 +25,7 @@ async function bootstrap() {
   });
   SwaggerModule.setup('doc', app, document);
 
-  if (process.env.NODE_ENV === 'development') {
+  if (Boolean(process.env.GEN_DOCS) === true) {
     await generateApiDocs(document);
   }
 
