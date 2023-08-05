@@ -94,12 +94,54 @@ PostgreSQL is used for persistence, Prisma ORM is used to communicate with Postg
 
 ### Init
 
+In order to create empty `Favorites` entity seeding is used. One can take a look at `package.json:prisma.seed` command to see that `prisma/seed.ts` script is executed.
+
 ```sh
-npx prisma migrate dev --name init
+npx prisma db seed
 ```
 
-### Model Change
+## Docker
+
+### Run
+
+Docker Compose is used to start application (both REST API and PostgreSQL will be started).
+REST API can be accessed from local machine as rest api port is published (`PORT` environment variable defined in `.env` file will be used).
+PostgreSQL can be accessed from local machine as database port is published (`POSTGRES_PORT` environment variable defined in `.env` file will be used).
 
 ```sh
-prisma generate
+docker compose up -d
+```
+
+### Stop
+
+```sh
+docker compose stop
+```
+
+### Vulnerabilities Check
+
+[Snyk](https://snyk.io) is used for vulnerabilities verification.
+Before running npm scripts please make sure to authenticate with Snyk APIs first (e.g. via GitHub):
+
+```
+snyk auth
+```
+
+To run security checks use the following NPM scripts:
+```
+npm run docker:vuln:rest
+npm run docker:vuln:db
+```
+
+### Logs
+
+```sh
+Logs from all services:
+docker compose logs -f
+
+Logs from rest-api-service:
+docker compose logs -f rest-api-service
+
+Logs from database-service:
+docker compose logs -f database-service
 ```
