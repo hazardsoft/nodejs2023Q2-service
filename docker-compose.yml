@@ -1,7 +1,7 @@
 services:
   rest-api-service:
     image: rest-api:latest
-    command: sh -c "npx prisma db seed && npm run start:prod"
+    command: sh -c "npx prisma db seed && npm run start:dev"
     depends_on:
       - database-service
     ports:
@@ -11,6 +11,8 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database-service:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
     restart: on-failure:5
+    volumes:
+      - ./src:/app/src
   database-service:
     image: hazardsoft/rest-database:latest
     ports:

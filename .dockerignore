@@ -5,6 +5,7 @@ docker
 .gitignore
 .vscode
 prisma/migrations
+src
 test
 .env
 .env.example
