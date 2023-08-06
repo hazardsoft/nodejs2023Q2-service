@@ -1,10 +1,11 @@
+name: rest-app-prod
 services:
   rest-api-service:
     build:
       context: .
       dockerfile: ./docker/rest/Dockerfile
     image: hazardsoft/library-rest-api:latest
-    command: sh -c "npx prisma migrate deploy && npx prisma db seed && npm run start:dev"
+    command: sh -c "npx prisma migrate deploy && npx prisma db seed && npm run start:prod"
     depends_on:
       - database-service
     ports:
@@ -12,18 +13,14 @@ services:
     networks:
       - library
     environment:
+      - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database-service:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
     restart: on-failure:5
-    volumes:
-      - ./src:/app/src
-      - ./test:/app/test
   database-service:
     build:
       context: .
       dockerfile: ./docker/db/Dockerfile
     image: hazardsoft/library-database:latest
-    ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -42,3 +39,4 @@ volumes:
 networks:
   library:
     name: library-service-network
+    driver: bridge

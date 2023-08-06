@@ -9,7 +9,7 @@
 
 ```
 git clone https://github.com/hazardsoft/nodejs2023Q2-service
-git checkout develop
+git checkout docker
 ```
 
 ## Installing NPM modules
@@ -21,21 +21,22 @@ npm install
 ## Create .env config
 
 Copy/paste `.env.example` and rename it to `.env` (`PORT` env variable is considered only at the moment)
-Part of env variables are passed to `docker-compose.yml`:
+Part of env variables are passed to `docker-compose.yml/docker-compose-dev.yml`:
 
 ```
-# PostgreSQL configuration for "database-service" service:
-POSTGRES_USER=username
+# Nest.js server port
+PORT=4000
+
+# PostgreSQL configuration for "database-service" service
+POSTGRES_USER=hazardsoft
 POSTGRES_PASSWORD=123456
 POSTGRES_DB=library
+POSTGRES_PORT=5432
 PGDATA=/var/lib/postgresql/data
-PRISMA_MIGRATION=20230729185908_init
 
-# PostgreSQL configuration for "rest-api-service" service:
-DATABASE_URL=postgresql://username:123456@database-service:5432/library?schema=public
+# PostreSQL connection url used by "rest-api-service" service
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
 ```
-
-where `PRISMA_MIGRATION` is a folder name containing latest Prisma migration, e.g. `20230729185908_init` in `./prisma/migrations/20230729185908_init`. PostgreSQL executes `migration.sql` upon database start (creates db tables with relations).
 
 ## Running application
 
@@ -82,12 +83,6 @@ npm run lint
 npm run format
 ```
 
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
-
 ## Database
 
 PostgreSQL is used for persistence, Prisma ORM is used to communicate with PostgreSQL.
@@ -104,39 +99,39 @@ npx prisma db seed
 
 ### Run
 
-Docker Compose is used to start application (both REST API and PostgreSQL will be started).
+Docker Compose is used to start application (REST API application and PostgreSQL server will be started).
 REST API can be accessed from local machine as rest api port is published (`PORT` environment variable defined in `.env` file will be used).
-PostgreSQL can be accessed from local machine as database port is published (`POSTGRES_PORT` environment variable defined in `.env` file will be used).
+PostgreSQL can be accessed from local machine as database port is published in DEV mode only(`POSTGRES_PORT` environment variable defined in `.env` file will be used).
 
 ```sh
-docker compose up -d
+dev:
+docker compose -f docker-compose.yml -f docker-compose-dev.yml up --build --detach
+
+prod:
+docker compose up --detach
 ```
 
 ### Stop
 
 ```sh
-docker compose stop
+dev:
+docker compose -f docker-compose.yml -f docker-compose-dev.yml down
+
+prod:
+docker compose down
 ```
+
+### Failure Auto-restart
+
+Rest API container auto restarts due to container failure if `docker-compose.yml` is run (only!), it does not work when `docker-compose-dev.yml` is used as application is started in watch mode.
 
 ### Vulnerabilities Check
 
 (Docker Scout)[https://docs.docker.com/scout/] is used to scan images for vulnerabilities
 
 To run security checks use the following NPM scripts:
+
 ```
 npm run vulns:rest
 npm run vulns:db
-```
-
-### Logs
-
-```sh
-Logs from all services:
-docker compose logs -f
-
-Logs from rest-api-service:
-docker compose logs -f rest-api-service
-
-Logs from database-service:
-docker compose logs -f database-service
 ```
