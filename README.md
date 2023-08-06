@@ -120,17 +120,12 @@ docker compose stop
 
 ### Vulnerabilities Check
 
-[Snyk](https://snyk.io) is used for vulnerabilities verification.
-Before running npm scripts please make sure to authenticate with Snyk APIs first (e.g. via GitHub):
-
-```
-snyk auth
-```
+(Docker Scout)[https://docs.docker.com/scout/] is used to scan images for vulnerabilities
 
 To run security checks use the following NPM scripts:
 ```
-npm run docker:vuln:rest
-npm run docker:vuln:db
+npm run vulns:rest
+npm run vulns:db
 ```
 
 ### Logs

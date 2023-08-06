@@ -20,8 +20,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "docker:vuln:rest": "snyk container test hazardsoft/rest-api:latest",
-    "docker:vuln:db": "snyk container test hazardsoft/rest-database:latest"
+    "vulns:rest": "docker scout cves hazardsoft/library-rest-api:latest",
+    "vulns:db": "docker scout cves hazardsoft/library-database:latest"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -62,7 +62,6 @@
     "jest": "^27.2.5",
     "prettier": "^2.3.2",
     "prisma": "^5.0.0",
-    "snyk": "^1.1200.0",
     "source-map-support": "^0.5.20",
     "supertest": "^6.2.3",
     "ts-jest": "^27.0.3",
