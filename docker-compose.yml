@@ -1,7 +1,10 @@
 services:
   rest-api-service:
-    image: rest-api:latest
-    command: sh -c "npx prisma db seed && npm run start:dev"
+    build:
+      context: .
+      dockerfile: ./docker/rest/Dockerfile
+    image: hazardsoft/library-rest-api:latest
+    command: sh -c "npx prisma migrate deploy && npx prisma db seed && npm run start:dev"
     depends_on:
       - database-service
     ports:
@@ -13,8 +16,12 @@ services:
     restart: on-failure:5
     volumes:
       - ./src:/app/src
+      - ./test:/app/test
   database-service:
-    image: hazardsoft/rest-database:latest
+    build:
+      context: .
+      dockerfile: ./docker/db/Dockerfile
+    image: hazardsoft/library-database:latest
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     environment:
@@ -24,13 +31,13 @@ services:
       - PGDATA=${PGDATA}
     networks:
       - library
+    restart: on-failure:5
     volumes:
       - pg-data:${PGDATA}
-      - ${PWD}/prisma/migrations/${PRISMA_MIGRATION}:/docker-entrypoint-initdb.d
-      - ${PWD}/postgresql/postgresql.conf:${PGDATA}/postgresql.conf
 
 volumes:
   pg-data:
+    name: pg-data
 
 networks:
   library:

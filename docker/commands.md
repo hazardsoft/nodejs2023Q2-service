@@ -4,30 +4,28 @@
 
 ```sh
 Rest API:
-docker build --tag rest-api --file docker/rest-api/Dockerfile .
+docker build --tag hazardsoft/library-rest-api --file docker/rest/Dockerfile .
 
 PostgreSQL:
-docker build --tag rest-database --file docker/database/Dockerfile .
+docker build --tag hazardsoft/library-database --file docker/db/Dockerfile .
 ```
 
 ## Docker images: run
 
 ```sh
 Rest API:
-docker run --publish 4000:4000 -d rest-api
+docker run --publish 4000:4000 -d hazardsoft/library-rest-api
 
 PostgreSQL:
-docker run --publish 5432:5432 -d rest-database
+docker run --publish 5432:5432 -d hazardsoft/library-database
 ```
 
 ## Docker images: publish
 
 ```sh
 Rest API:
-docker tag rest-api:latest hazardsoft/rest-api:latest
-docker push hazardsoft/rest-api
+docker push hazardsoft/library-rest-api
 
 PostgreSQL:
-docker tag rest-database:latest hazardsoft/rest-database:latest
-docker push hazardsoft/rest-database
+docker push hazardsoft/library-database
 ```
