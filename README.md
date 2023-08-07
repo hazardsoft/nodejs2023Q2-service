@@ -21,7 +21,7 @@ npm install
 ## Create .env config
 
 Copy/paste `.env.example` and rename it to `.env` (`PORT` env variable is considered only at the moment)
-Part of env variables are passed to `docker-compose.yml/docker-compose-dev.yml`:
+Part of env variables are passed to `dev.yml/prod.yml`:
 
 ```
 # Nest.js server port
@@ -105,25 +105,25 @@ PostgreSQL can be accessed from local machine as database port is published in D
 
 ```sh
 dev:
-docker compose -f docker-compose.yml -f docker-compose-dev.yml up --build --detach
+docker compose -f prod.yml -f dev.yml up --build --detach
 
 prod:
-docker compose up --detach
+docker compose -f prod.yml up --detach
 ```
 
 ### Stop
 
 ```sh
 dev:
-docker compose -f docker-compose.yml -f docker-compose-dev.yml down
+docker compose -f prod.yml -f dev.yml down
 
 prod:
-docker compose down
+docker compose -f prod.yml down
 ```
 
 ### Failure Auto-restart
 
-Rest API container auto restarts due to container failure if `docker-compose.yml` is run (only!), it does not work when `docker-compose-dev.yml` is used as application is started in watch mode.
+Rest API container auto restarts due to container failure if `prod.yml` is run (only!), it does not work when `dev.yml` is used as in this case application is started in watch mode.
 
 ### Vulnerabilities Check
 

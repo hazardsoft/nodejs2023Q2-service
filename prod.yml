@@ -7,7 +7,8 @@ services:
     image: hazardsoft/library-rest-api:latest
     command: sh -c "npx prisma migrate deploy && npx prisma db seed && npm run start:prod"
     depends_on:
-      - database-service
+      database-service:
+        condition: service_healthy
     ports:
       - ${PORT}:${PORT}
     networks:
@@ -15,7 +16,7 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database-service:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
-    restart: on-failure:5
+    restart: always
   database-service:
     build:
       context: .
@@ -28,13 +29,12 @@ services:
       - PGDATA=${PGDATA}
     networks:
       - library
-    restart: on-failure:5
-    volumes:
-      - pg-data:${PGDATA}
-
-volumes:
-  pg-data:
-    name: pg-data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready']
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    restart: always
 
 networks:
   library:
