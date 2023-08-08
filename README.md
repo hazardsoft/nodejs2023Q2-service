@@ -23,6 +23,7 @@ git checkout docker
 1. [Install dependencies](./README.md#installing-dependencies)
 2. [Create .env config](./README.md#creating-env-config)
 3. [Run application with Docker](./README.md#running-application-with-docker-compose)
+4. [Run application w/o Docker (optionally)](./README.md#running-application-wo-docker-optional)
 
 ### Installing Dependencies
 
@@ -35,7 +36,7 @@ npm install
 Copy/paste `.env.example` and rename it to `.env`.
 Contents passed as ENV variables to `docker-compose.yml/docker-compose-prod.yml` when Docker Compose run.
 
-### Running Application with Docker Compose
+### Running Application with Docker
 
 Docker Compose is used to run application (REST API application and PostgreSQL server will be started).
 There are 2 modes of running application: development and production. Each mode has distinguishing features described below:
@@ -75,6 +76,18 @@ docker compose -f docker-compose-prod.yml up --detach (in case you do not want t
 stop:
 docker compose -f docker-compose-prod.yml down
 ```
+
+### Running Application w/o Docker (optional)
+
+Normally application should be run with Docker Compose (refer to [Running Application with Docker](./README.md#running-application-with-docker)).
+
+If you still need to run application/tests w/o Docker (e.g. for better debug experience), the following steps should be done:
+1. update `.env` file: change value of `POSTGRES_HOST` to `localhost`
+2. run `docker compose up database-service --detach` command - runs PostgreSQL service only
+3. run `npx prisma migrate deploy` - applies prisma migrations to the database started in p.2
+4. run `npx prisma db seed` - seeds database started in p.2
+5. run `npm run start:dev` 
+6. run `npm run test`
 
 ## Verifications
 
