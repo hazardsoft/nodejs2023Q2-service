@@ -4,6 +4,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/rest/Dockerfile-dev
+    image: hazardsoft/library-rest-api:latest
     command: sh -c "npx prisma migrate deploy && npx prisma db seed && npm run start:dev"
     ports:
       - ${PORT}:${PORT}
@@ -19,6 +20,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/db/Dockerfile
+    image: hazardsoft/library-database:latest
     command: '-c log_statement=all -c logging_collector=on -c log_directory=/var/lib/postgresql/log -c log_filename=postgresql-%Y-%m-%d_%H%M%S.log'
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
