@@ -21,7 +21,7 @@ npm install
 ## Create .env config
 
 Copy/paste `.env.example` and rename it to `.env` (`PORT` env variable is considered only at the moment)
-Part of env variables are passed to `dev.yml/prod.yml`:
+Environment variables are passed to `docker-compose.yml/docker-compose-prod.yml`:
 
 ```
 # Nest.js server port
@@ -32,7 +32,6 @@ POSTGRES_USER=hazardsoft
 POSTGRES_PASSWORD=123456
 POSTGRES_DB=library
 POSTGRES_PORT=5432
-PGDATA=/var/lib/postgresql/data
 
 # PostreSQL connection url used by "rest-api-service" service
 DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
@@ -105,25 +104,26 @@ PostgreSQL can be accessed from local machine as database port is published in D
 
 ```sh
 dev:
-docker compose -f prod.yml -f dev.yml up --build --detach
+docker compose up --build --detach
 
 prod:
-docker compose -f prod.yml up --detach
+docker compose -f docker-compose-prod.yml up --build --detach
+docker compose -f docker-compose-prod.yml up --detach (in case you do not want to build docker images locally but want to pull them from Docker Hub instead)
 ```
 
 ### Stop
 
 ```sh
 dev:
-docker compose -f prod.yml -f dev.yml down
+docker compose down
 
 prod:
-docker compose -f prod.yml down
+docker compose -f docker-compose-prod.yml down
 ```
 
 ### Failure Auto-restart
 
-Rest API container auto restarts due to container failure if `prod.yml` is run (only!), it does not work when `dev.yml` is used as in this case application is started in watch mode.
+Rest API container auto restarts due to container failure if `docker-compose-prod.yml` is run (only!), it does not work when `docker-compose.yml` is used as in this case application is started in watch mode.
 
 ### Vulnerabilities Check
 

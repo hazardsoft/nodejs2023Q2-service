@@ -8,9 +8,9 @@ node_modules
 .dockerignore
 .env
 .env.example
+.eslintignore
 .eslintrc.js
 .gitignore
 .prettierrc
-dev.yml
-prod.yml
+docker-compose*.yml
 README.md
