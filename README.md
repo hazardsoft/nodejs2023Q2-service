@@ -83,7 +83,7 @@ Normally application should be run with Docker Compose (refer to [Running Applic
 
 If you still need to run application/tests w/o Docker (e.g. for better debug experience), the following steps should be done:
 1. update `.env` file: change value of `POSTGRES_HOST` to `localhost`
-2. run `docker compose up database-service --detach` command - runs PostgreSQL service only
+2. run `docker compose up database-service --build --detach` command - runs PostgreSQL service only
 3. run `npx prisma migrate deploy` - applies prisma migrations to the database started in p.2
 4. run `npx prisma db seed` - seeds database started in p.2
 5. run `npm run start:dev` 
