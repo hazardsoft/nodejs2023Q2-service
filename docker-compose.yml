@@ -13,7 +13,7 @@ services:
       - ./test:/app/test
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database-service:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+      - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - database-service
   database-service:
