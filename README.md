@@ -78,15 +78,23 @@ docker compose -f docker-compose-prod.yml down
 
 ## Verifications
 
-1. [Custom Network](./README.md#custom-network)
-2. [Container Auto Restart](./README.md#container-auto-restart)
-3. [Application Auto Restart](./README.md#application-auto-restart)
-4. [Database data/logs in Volumes](./README.md#database-datalogs-in-volumes)
-5. [Docker Image Size](./README.md#docker-image-size)
-6. [Vulnerabilities Check](./README.md#vulnerabilities-check)
-7. [Docker Hub](./README.md#docker-hub)
-8. [Database Migrations](./README.md#database-migrations)
-9. [ESLint/Prettier](./README.md#eslintprettier)
+1. [Run Tests](./README.md#run-tests)
+2. [Custom Network](./README.md#custom-network)
+3. [Container Auto Restart](./README.md#container-auto-restart)
+4. [Application Auto Restart](./README.md#application-auto-restart)
+5. [Database data/logs in Volumes](./README.md#database-datalogs-in-volumes)
+6. [Docker Image Size](./README.md#docker-image-size)
+7. [Vulnerabilities Check](./README.md#vulnerabilities-check)
+8. [Docker Hub](./README.md#docker-hub)
+9. [Database Migrations](./README.md#database-migrations)
+10. [ESLint/Prettier](./README.md#eslintprettier)
+
+### Run Tests
+
+Run application in development mode. Open `Terminal` tab of REST API container, type in and run `npm run test` command (refer to image below).
+![Image displaying running tests in REST API container in development mode](images/tests-dev-mode.png)
+**Please refer to [Development Mode](./README.md#development-mode) for more details**
+
 
 ### Custom Network
 
