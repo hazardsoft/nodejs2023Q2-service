@@ -28,8 +28,9 @@ model Track {
   albumId  String?
   duration Int
 
-  artist Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
-  album  Album?  @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  artist   Artist?        @relation(fields: [artistId], references: [id], onDelete: SetNull)
+  album    Album?         @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  favorite FavoriteTrack? @relation("favorite_track")
 }
 
 model Artist {
@@ -37,8 +38,9 @@ model Artist {
   name   String
   grammy Boolean
 
-  tracks Track[]
-  albums Album[]
+  tracks   Track[]
+  albums   Album[]
+  favorite FavoriteArtist?
 }
 
 model Album {
@@ -47,13 +49,42 @@ model Album {
   year     Int
   artistId String?
 
-  artist Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
-  tracks Track[]
+  artist   Artist?        @relation(fields: [artistId], references: [id], onDelete: SetNull)
+  tracks   Track[]
+  favorite FavoriteAlbum?
 }
 
-model Favorites {
-  id      Int      @id @default(1)
-  artists String[] @default([])
-  albums  String[] @default([])
-  tracks  String[] @default([])
+model FavoriteTrack {
+  trackId    String   @unique
+  track      Track    @relation("favorite_track", fields: [trackId], references: [id], onDelete: Cascade)
+  favoriteId Int
+  favorite   Favorite @relation(fields: [favoriteId], references: [id], onDelete: Cascade)
+
+  @@id([trackId, favoriteId])
+}
+
+model FavoriteAlbum {
+  albumId    String   @unique
+  album      Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  favoriteId Int
+  favorite   Favorite @relation(fields: [favoriteId], references: [id], onDelete: Cascade)
+
+  @@id([albumId, favoriteId])
+}
+
+model FavoriteArtist {
+  artistId   String   @unique
+  artist     Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  favoriteId Int
+  favorite   Favorite @relation(fields: [favoriteId], references: [id], onDelete: Cascade)
+
+  @@id([artistId, favoriteId])
+}
+
+model Favorite {
+  id Int @id @default(1)
+
+  tracks  FavoriteTrack[]
+  albums  FavoriteAlbum[]
+  artists FavoriteArtist[]
 }

@@ -1,44 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { Track } from './entities/track.entity';
-import { PrismaService } from 'src/db/prisma.service';
 import { plainToInstance } from 'class-transformer';
-import { FavsService } from 'src/favs/favs.service';
+import TrackRepository from './track.repository';
 
 @Injectable()
 export class TrackService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly favoritesService: FavsService,
-  ) {}
+  constructor(private readonly repository: TrackRepository) {}
 
   async create(createTrackDto: CreateTrackDto): Promise<Track> {
-    return plainToInstance(
-      Track,
-      await this.prismaService.createTrack(createTrackDto),
-    );
+    return plainToInstance(Track, await this.repository.create(createTrackDto));
   }
 
   async findAll(): Promise<Track[]> {
-    return plainToInstance(Track, await this.prismaService.findTracks());
+    return plainToInstance(Track, await this.repository.findMany());
   }
 
   async findOne(id: string): Promise<Track> {
-    return plainToInstance(Track, await this.prismaService.findTrack(id));
+    return plainToInstance(Track, await this.repository.findOne(id));
+  }
+
+  async findSome(ids: string[]): Promise<Track[]> {
+    return plainToInstance(Track, await this.repository.findSome(ids));
   }
 
   async update(id: string, updateTrackDto: CreateTrackDto): Promise<Track> {
     return plainToInstance(
       Track,
-      await this.prismaService.updateTrack(id, updateTrackDto),
+      await this.repository.update(id, updateTrackDto),
     );
   }
 
   async remove(id: string): Promise<Track> {
-    try {
-      await this.favoritesService.removeTrack(id);
-    } catch (e) {}
-
-    return plainToInstance(Track, await this.prismaService.removeTrack(id));
+    return plainToInstance(Track, await this.repository.delete(id));
   }
 }

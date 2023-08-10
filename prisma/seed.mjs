@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 async function main() {
   const favoritesEntiryId = 1;
 
-  await prisma.favorites.deleteMany({
+  await prisma.favorite.deleteMany({
     where: {
       id: {
         not: favoritesEntiryId,
@@ -12,13 +12,13 @@ async function main() {
     },
   });
   try {
-    await prisma.favorites.findUniqueOrThrow({
+    await prisma.favorite.findUniqueOrThrow({
       where: {
         id: favoritesEntiryId,
       },
     });
   } catch (e) {
-    await prisma.favorites.create({});
+    await prisma.favorite.create({});
   }
 }
 

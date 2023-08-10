@@ -22,7 +22,7 @@ git checkout docker
 
 1. [Install dependencies](./README.md#installing-dependencies)
 2. [Create .env config](./README.md#creating-env-config)
-3. [Run application with Docker](./README.md#running-application-with-docker-compose)
+3. [Run application with Docker](./README.md#running-application-with-docker)
 4. [Run application w/o Docker (optionally)](./README.md#running-application-wo-docker-optional)
 
 ### Installing Dependencies

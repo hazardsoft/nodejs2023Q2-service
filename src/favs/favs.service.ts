@@ -1,100 +1,78 @@
 import { Injectable } from '@nestjs/common';
-import { Favorites, FavoritesIds } from './entities/fav.entity';
-import { PrismaService } from 'src/db/prisma.service';
+import { Favorites } from './entities/fav.entity';
 import { plainToInstance } from 'class-transformer';
 import { FavoritesCreateError, FavoritesDeleteError } from './errors';
+import FavoritesRepository from './favs.repository';
+import { TrackService } from 'src/track/track.service';
+import { AlbumService } from 'src/album/album.service';
+import { ArtistService } from 'src/artist/artist.service';
 
 @Injectable()
 export class FavsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly repository: FavoritesRepository,
+    private readonly trackService: TrackService,
+    private readonly albumService: AlbumService,
+    private readonly artistService: ArtistService,
+  ) {}
 
   async findAll(): Promise<Favorites> {
-    const favoritesIds = await this.prismaService.findFavorites();
-    const tracks = await this.prismaService.findSomeTracks(favoritesIds.tracks);
-    const artists = await this.prismaService.findSomeArtists(
-      favoritesIds.artists,
-    );
-    const albums = await this.prismaService.findSomeAlbums(favoritesIds.albums);
-
+    const favoritesIds = await this.repository.getFavoritesIds();
+    const tracks = await this.trackService.findSome(favoritesIds.tracks);
+    const albums = await this.albumService.findSome(favoritesIds.albums);
+    const artists = await this.artistService.findSome(favoritesIds.artists);
     return plainToInstance(Favorites, {
       tracks,
-      artists,
       albums,
+      artists,
     });
   }
 
-  async createTrack(id: string): Promise<FavoritesIds> {
+  async createTrack(id: string): Promise<void> {
     try {
-      await this.prismaService.findTrack(id);
+      await this.repository.createTrack(id);
     } catch (e) {
       throw new FavoritesCreateError();
     }
-
-    return plainToInstance(
-      FavoritesIds,
-      await this.prismaService.createFavoriteTrack(id),
-    );
   }
 
-  async createAlbum(id: string): Promise<FavoritesIds> {
+  async createAlbum(id: string): Promise<void> {
     try {
-      await this.prismaService.findAlbum(id);
+      await this.repository.createAlbum(id);
     } catch (e) {
       throw new FavoritesCreateError();
     }
-
-    return plainToInstance(
-      FavoritesIds,
-      await this.prismaService.createFavoriteAlbum(id),
-    );
   }
 
-  async createArtist(id: string): Promise<FavoritesIds> {
+  async createArtist(id: string): Promise<void> {
     try {
-      await this.prismaService.findArtist(id);
+      await this.repository.createArtist(id);
     } catch (e) {
       throw new FavoritesCreateError();
     }
-
-    return plainToInstance(
-      FavoritesIds,
-      await this.prismaService.createFavoriteArtist(id),
-    );
   }
 
-  async removeTrack(id: string): Promise<FavoritesIds> {
-    const favorites = await this.prismaService.findFavorites();
-    if (!favorites.tracks.includes(id)) {
+  async removeTrack(id: string): Promise<void> {
+    try {
+      await this.repository.deleteTrack(id);
+    } catch (e) {
       throw new FavoritesDeleteError();
     }
-
-    return plainToInstance(
-      FavoritesIds,
-      await this.prismaService.removeFavoriteTrack(id),
-    );
   }
 
-  async removeAlbum(id: string): Promise<FavoritesIds> {
-    const favorites = await this.prismaService.findFavorites();
-    if (!favorites.albums.includes(id)) {
+  async removeAlbum(id: string): Promise<void> {
+    try {
+      await this.repository.deleteAlbum(id);
+    } catch (e) {
       throw new FavoritesDeleteError();
     }
-
-    return plainToInstance(
-      FavoritesIds,
-      await this.prismaService.removeFavoriteAlbum(id),
-    );
   }
 
-  async removeArtist(id: string): Promise<FavoritesIds> {
-    const favorites = await this.prismaService.findFavorites();
-    if (!favorites.artists.includes(id)) {
+  async removeArtist(id: string): Promise<void> {
+    try {
+      await this.repository.deleteArtist(id);
+    } catch (e) {
       throw new FavoritesDeleteError();
     }
-
-    return plainToInstance(
-      FavoritesIds,
-      await this.prismaService.removeFavoriteArtist(id),
-    );
   }
 }

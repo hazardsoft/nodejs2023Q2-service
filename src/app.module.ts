@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { AppController } from './app.controller';
 import { UserModule } from './user/user.module';
+import { AlbumModule } from './album/album.module';
 import { TrackModule } from './track/track.module';
 import { ArtistModule } from './artist/artist.module';
-import { AlbumModule } from './album/album.module';
 import { FavsModule } from './favs/favs.module';
-import { DbModule } from './db/db.module';
-import { AppController } from './app.controller';
+import { PrismaModule } from './db/prisma.module';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { AppController } from './app.controller';
     ArtistModule,
     AlbumModule,
     FavsModule,
-    DbModule,
+    PrismaModule,
   ],
   controllers: [AppController],
 })
