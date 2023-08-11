@@ -33,13 +33,17 @@ npm install
 
 ### Creating .env Config
 
-Copy/paste `.env.example` and rename it to `.env`.
-Contents passed as ENV variables to `docker-compose.yml/docker-compose-prod.yml` when Docker Compose run.
+Create 2 config files out of `.env.example` via copy/paste:
+1. `.env` file to be used to local development (set `POSTGRES_HOST` variable to `localhost`);
+2. `.env.docker` to be used by Docker (make sure that `POSTGRES_HOST` is set to `database-service`).
 
 ### Running Application with Docker
 
 Docker Compose is used to run application (REST API application and PostgreSQL server will be started).
-There are 2 modes of running application: development and production. Each mode has distinguishing features described below:
+There are 2 modes of running application: development and production. 
+Each mode has distinguishing features described below:
+
+**N.B. Application can not be run in both mode simultaneously (in that case `port is already allocated` error can be seen in the console), if one mode already started and you want to start another one, please stop already running first.**
 
 #### Development Mode
 
@@ -53,7 +57,7 @@ Development mode is used for local development specifically and has number of di
 
 ```sh
 start:
-docker compose up --build --detach
+docker compose --env-file .env.docker up --build --detach
 
 stop:
 docker compose down
@@ -70,8 +74,8 @@ Production mode is introduced for CI/CD use primarily and has number of distingu
 
 ```sh
 start:
-docker compose -f docker-compose-prod.yml up --build --detach
-docker compose -f docker-compose-prod.yml up --detach (in case you do not want to build docker images locally but want to pull them from Docker Hub instead)
+docker compose -f docker-compose-prod.yml --env-file .env.docker up --build --detach
+docker compose -f docker-compose-prod.yml --env-file .env.docker up --detach (in case you do not want to build docker images locally but want to pull them from Docker Hub instead)
 
 stop:
 docker compose -f docker-compose-prod.yml down
@@ -87,7 +91,7 @@ If you still need to run application/tests w/o Docker (e.g. for better debug exp
 3. run `npx prisma migrate deploy` - applies prisma migrations to the database started in p.2
 4. run `npx prisma db seed` - seeds database started in p.2
 5. run `npm run start:dev` 
-6. run `npm run test`
+6. run `npm test`
 
 ## Verifications
 
@@ -104,9 +108,15 @@ If you still need to run application/tests w/o Docker (e.g. for better debug exp
 
 ### Run Tests
 
-Run application in development mode. Open `Terminal` tab of REST API container, type in and run `npm run test` command (refer to image below).
-![Image displaying running tests in REST API container in development mode](images/tests-dev-mode.png)
+Run application in development mode. 
 **Please refer to [Development Mode](./README.md#development-mode) for more details**
+
+Tests can be run either on host or in a container:
+1. to run tests on host run command `npm test` in a terminal (as usual);
+2. to run tests in the container :
+   1. open `Terminal` tab of REST API container;
+   2. run `npm test` command in the container's terminal (refer to the image below).
+    ![Image displaying running tests in REST API container in development mode](images/tests-dev-mode.png)
 
 
 ### Custom Network
