@@ -14,7 +14,6 @@ services:
     networks:
       - library
     environment:
-      - NODE_ENV=production
       - DATABASE_URL=${DATABASE_URL}
     restart: always
   database-service:

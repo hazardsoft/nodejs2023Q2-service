@@ -12,7 +12,6 @@ services:
       - ./src:/app/src
       - ./test:/app/test
     environment:
-      - NODE_ENV=development
       - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - database-service
