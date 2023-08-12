@@ -86,12 +86,11 @@ docker compose -f docker-compose-prod.yml down
 Normally application should be run with Docker Compose (refer to [Running Application with Docker](./README.md#running-application-with-docker)).
 
 If you still need to run application/tests w/o Docker (e.g. for better debug experience), the following steps should be done:
-1. update `.env` file: change value of `POSTGRES_HOST` to `localhost`
-2. run `docker compose up database-service --build --detach` command - runs PostgreSQL service only
-3. run `npx prisma migrate deploy` - applies prisma migrations to the database started in p.2
-4. run `npx prisma db seed` - seeds database started in p.2
-5. run `npm run start:dev` 
-6. run `npm test`
+1. run `docker compose --env-file .env.docker up database-service --build --detach` command - runs PostgreSQL service only
+2. run `npx prisma migrate deploy` - applies prisma migrations to the database started in p.2
+3. run `npx prisma db seed` - seeds database started in p.2
+4. run `npm run start:dev` 
+5. run `npm test`
 
 ## Verifications
 
@@ -187,7 +186,7 @@ Both REST API and PostgreSQL docker images are published to Docker Hub (refer to
 
 The following commands are called when container starts:
 1. `npx prisma migrate deploy` - Prisma applies migrations stored in `prisma/migrations` folder to a running database;
-2. `npx prisma db seed` - Prisma runs `prisma:seed` command defined in `package.json` to create default `Favorites` entity.
+2. `npx prisma db seed` - Prisma runs `prisma:seed` command defined in `package.json` to create default `Favorite` entity.
 
 ### ESLint/Prettier
 
