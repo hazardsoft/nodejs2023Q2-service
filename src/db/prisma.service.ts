@@ -228,7 +228,6 @@ export class PrismaService implements OnModuleInit {
         version: {
           increment: 1,
         },
-        updatedAt: new Date(),
         password: updateDto.newPassword,
       },
     });

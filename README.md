@@ -86,7 +86,7 @@ docker compose -f docker-compose-prod.yml down
 Normally application should be run with Docker Compose (refer to [Running Application with Docker](./README.md#running-application-with-docker)).
 
 If you still need to run application/tests w/o Docker (e.g. for better debug experience), the following steps should be done:
-1. run `docker compose --env-file .env.docker up database-service --build --detach` command - runs PostgreSQL service only
+1. run `docker compose up database-service --build --detach` command - runs PostgreSQL service only
 2. run `npx prisma migrate deploy` - applies prisma migrations to the database started in p.2
 3. run `npx prisma db seed` - seeds database started in p.2
 4. run `npm run start:dev` 
