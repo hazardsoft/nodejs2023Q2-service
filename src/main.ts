@@ -1,16 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, LogLevel } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { generateApiDocs } from './docsGenerator';
-import { PrismaExceptionFilter } from './db/filters/prisma.client.exception.filter';
+import { LoggingService } from './logger/logging.service';
+import { RequestInterceptor } from './request.interceptor';
+import GlobalExceptionFilter from './exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
 
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT') || 4000;
 
   const config = new DocumentBuilder()
     .setTitle('Home Library Service')
@@ -36,9 +39,17 @@ async function bootstrap() {
     }),
   );
 
-  const httpAdapter = app.getHttpAdapter();
-  app.useGlobalFilters(new PrismaExceptionFilter(httpAdapter));
+  const logLevels = configService.get<LogLevel[]>('LOG_LEVELS');
+  const logger = app.get(LoggingService);
+  logger.setLogLevels(logLevels);
+  app.useLogger(logger);
 
+  const interceptor = app.get(RequestInterceptor);
+  app.useGlobalInterceptors(interceptor);
+
+  app.useGlobalFilters(new GlobalExceptionFilter(logger, app.getHttpAdapter()));
+
+  const port = configService.get<number>('PORT') || 4000;
   await app.listen(port);
 
   process.on('exit', () => {

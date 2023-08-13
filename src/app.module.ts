@@ -7,6 +7,8 @@ import { TrackModule } from './track/track.module';
 import { ArtistModule } from './artist/artist.module';
 import { FavsModule } from './favs/favs.module';
 import { PrismaModule } from './db/prisma.module';
+import { LoggerModule } from './logger/logger.module';
+import { RequestInterceptor } from './request.interceptor';
 
 @Module({
   imports: [
@@ -17,7 +19,10 @@ import { PrismaModule } from './db/prisma.module';
     AlbumModule,
     FavsModule,
     PrismaModule,
+    LoggerModule,
   ],
+  providers: [RequestInterceptor],
   controllers: [AppController],
+  exports: [RequestInterceptor],
 })
 export class AppModule {}
