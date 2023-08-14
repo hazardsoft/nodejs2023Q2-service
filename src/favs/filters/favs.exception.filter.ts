@@ -10,7 +10,7 @@ import BaseExceptionFilter from 'src/common/base.exception.filter';
 export class FavsExceptionFilter extends BaseExceptionFilter<FavoritesError> {
   catch(exception: FavoritesError, host: ArgumentsHost) {
     if (exception instanceof FavoritesCreateError) {
-      this.handleError(
+      return this.handleError(
         {
           statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
           message: exception.message,
