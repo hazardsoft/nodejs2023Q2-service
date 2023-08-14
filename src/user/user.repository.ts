@@ -19,6 +19,10 @@ export default class UserRepository extends GenericRepository<
     return this.prisma.findUser(id);
   }
 
+  async findOneByLogin(login: string): Promise<User> {
+    return this.prisma.findUserByLogin(login);
+  }
+
   async findMany(): Promise<User[]> {
     return this.prisma.findUsers();
   }

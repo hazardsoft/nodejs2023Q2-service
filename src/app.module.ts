@@ -14,6 +14,8 @@ import { AuthExceptionFilter } from './auth/auth.exception.filter';
 import { PrismaExceptionFilter } from './db/prisma.exception.filter';
 import { HttpExceptionFilter } from './common/http.exception.filter';
 import { CommonModule } from './common/CommonModule';
+import { CryptoService } from './crypto/crypto.service';
+import { CryptoModule } from './crypto/crypto.module';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { CommonModule } from './common/CommonModule';
     FavsModule,
     PrismaModule,
     CommonModule,
+    CryptoModule,
   ],
   providers: [
     RequestInterceptor,
@@ -41,6 +44,7 @@ import { CommonModule } from './common/CommonModule';
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
+    CryptoService,
   ],
   controllers: [AppController],
 })

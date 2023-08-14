@@ -11,10 +11,7 @@ import { LoginDto } from './dto/login.dto';
 import { Auth } from './entity/auth.entity';
 import { AuthService } from './auth.service';
 import { SkipAuth } from './decorators';
-
-type SignupResponse = {
-  message: string;
-};
+import { User } from 'src/user/entities/user.entity';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -30,11 +27,8 @@ export class AuthController {
   @ApiBadRequestResponse({
     description: 'Bad request. body does not contain required fields',
   })
-  async signup(@Body() dto: SignupDto): Promise<SignupResponse> {
-    await this.authService.signup(dto);
-    return {
-      message: `signed up successfully, user ${dto.login}`,
-    };
+  async signup(@Body() dto: SignupDto): Promise<User> {
+    return this.authService.signup(dto);
   }
 
   @Post('login')
