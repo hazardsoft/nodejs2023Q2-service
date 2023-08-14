@@ -9,6 +9,7 @@ import { FavsModule } from './favs/favs.module';
 import { PrismaModule } from './db/prisma.module';
 import { LoggerModule } from './logger/logger.module';
 import { RequestInterceptor } from './request.interceptor';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RequestInterceptor } from './request.interceptor';
     FavsModule,
     PrismaModule,
     LoggerModule,
+    AuthModule,
   ],
   providers: [RequestInterceptor],
   controllers: [AppController],

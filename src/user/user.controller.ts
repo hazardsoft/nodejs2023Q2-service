@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UseFilters,
   ClassSerializerInterceptor,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -29,10 +30,14 @@ import { User } from './entities/user.entity';
 import { config } from 'src/config';
 import { StatusCodes } from 'http-status-codes';
 import { UserExceptionFilter } from './filters/user.exception.filter';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/constants';
+import { SetRoles } from 'src/auth/decorators';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(UserExceptionFilter)
+@UseGuards(RolesGuard)
 @ApiTags('User')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -51,6 +56,7 @@ export class UserController {
   }
 
   @Get()
+  @SetRoles(Roles.USER)
   @ApiOperation({ summary: 'Get all users', description: 'Gets all users' })
   async findAll(): Promise<User[]> {
     return this.userService.findAll();
