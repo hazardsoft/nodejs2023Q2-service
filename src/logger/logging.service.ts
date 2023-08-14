@@ -1,4 +1,5 @@
 import { Injectable, LogLevel, LoggerService } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 type LogHandler = (message: string, ...args) => void;
 
@@ -35,6 +36,12 @@ const handlers: Record<LogLevel, LogHandler> = {
 @Injectable()
 export class LoggingService implements LoggerService {
   private activeHandlers: Record<LogLevel, LogHandler> = { ...handlers };
+
+  constructor(private readonly configService: ConfigService) {
+    this.setLogLevels(
+      configService.get<LogLevel[]>('LOG_LEVELS') ?? ['verbose'],
+    );
+  }
 
   log(message: any, ...optionalParams: any[]) {
     this.activeHandlers['log']?.apply(this, [message, ...optionalParams]);

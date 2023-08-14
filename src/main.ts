@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
-import { ValidationPipe, LogLevel } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { generateApiDocs } from './docsGenerator';
 import { LoggingService } from './logger/logging.service';
@@ -39,9 +39,7 @@ async function bootstrap() {
     }),
   );
 
-  const logLevels = configService.get<LogLevel[]>('LOG_LEVELS');
   const logger = app.get(LoggingService);
-  logger.setLogLevels(logLevels);
   app.useLogger(logger);
 
   const interceptor = app.get(RequestInterceptor);
