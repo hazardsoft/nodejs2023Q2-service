@@ -1,5 +1,4 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth.guard';
 import { LoggerModule } from 'src/logger/logger.module';
 import { AuthController } from './auth.controller';
@@ -10,6 +9,7 @@ import { PrismaModule } from 'src/db/prisma.module';
 import { AuthRepository } from './auth.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -39,6 +39,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     AuthRepository,
   ],
   controllers: [AuthController],
-  exports: [LoggerModule],
+  exports: [LoggerModule, JwtModule],
 })
 export class AuthModule {}

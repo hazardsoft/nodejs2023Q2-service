@@ -2,7 +2,8 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { LoggingService } from 'src/logger/logging.service';
-import { Roles, RolesMetadata } from './constants';
+import { Roles } from './constants';
+import { ROLES_META } from './decorators';
 
 type UserRequest = {
   user?: {
@@ -19,10 +20,7 @@ export class RolesGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const roles = this.reflector.get<Roles[]>(
-      RolesMetadata,
-      context.getHandler(),
-    );
+    const roles = this.reflector.get<Roles[]>(ROLES_META, context.getHandler());
     if (!roles) {
       return true;
     }

@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNoContentResponse,
@@ -33,12 +34,14 @@ import { UserExceptionFilter } from './filters/user.exception.filter';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/constants';
 import { SetRoles } from 'src/auth/decorators';
+import { AuthExceptionFilter } from 'src/auth/auth.exception.filter';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(UserExceptionFilter)
 @UseGuards(RolesGuard)
 @ApiTags('User')
+@ApiBearerAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -57,6 +60,7 @@ export class UserController {
 
   @Get()
   @SetRoles(Roles.USER)
+  @UseFilters(AuthExceptionFilter)
   @ApiOperation({ summary: 'Get all users', description: 'Gets all users' })
   async findAll(): Promise<User[]> {
     return this.userService.findAll();

@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  UseFilters,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import {
   ApiCreatedResponse,
   ApiTags,
@@ -17,19 +10,19 @@ import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { Auth } from './entity/auth.entity';
 import { AuthService } from './auth.service';
-import { AuthExceptionFilter } from './auth.exception.filter';
+import { SkipAuth } from './decorators';
 
 type SignupResponse = {
   message: string;
 };
 
 @Controller('auth')
-@UseFilters(AuthExceptionFilter)
 @ApiTags('Auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
+  @SkipAuth()
   @ApiOperation({ summary: 'Sign up', description: 'Signs up as a new user' })
   @ApiCreatedResponse({
     description: 'The user has been signed up',
@@ -45,6 +38,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @SkipAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Login',

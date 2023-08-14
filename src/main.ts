@@ -7,6 +7,7 @@ import { generateApiDocs } from './docsGenerator';
 import { LoggingService } from './logger/logging.service';
 import { RequestInterceptor } from './request.interceptor';
 import GlobalExceptionFilter from './exception.filter';
+import { AuthExceptionFilter } from './auth/auth.exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -20,6 +21,7 @@ async function bootstrap() {
     .setDescription('Home music library service')
     .setVersion('1.0.0')
     .addServer('/')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {
