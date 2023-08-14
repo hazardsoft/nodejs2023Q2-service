@@ -7,7 +7,7 @@ export class AuthExceptionFilter extends ExceptionFilter<AuthError> {
   catch(exception: AuthError, host: ArgumentsHost) {
     if (exception instanceof UnauthorizedError) {
       return this.handleError(
-        { statusCode: HttpStatus.UNAUTHORIZED, message: exception.message },
+        { statusCode: HttpStatus.FORBIDDEN, message: exception.message },
         host,
       );
     }

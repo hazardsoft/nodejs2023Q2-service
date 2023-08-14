@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { LoggingService } from 'src/logger/logging.service';
-import { InvalidTokenError, UnauthorizedError } from './errors';
+import { InvalidTokenError } from './errors';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { SKIP_AUTH_META } from './decorators';
@@ -40,7 +40,7 @@ export class AuthGuard implements CanActivate {
         `authentication failed: ${JSON.stringify(e)}`,
         AuthGuard.name,
       );
-      throw new UnauthorizedError();
+      throw new InvalidTokenError();
     }
 
     return true;
