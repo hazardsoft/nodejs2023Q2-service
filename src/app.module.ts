@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    AuthModule,
     UserModule,
     TrackModule,
     ArtistModule,
@@ -21,7 +22,6 @@ import { AuthModule } from './auth/auth.module';
     FavsModule,
     PrismaModule,
     LoggerModule,
-    AuthModule,
   ],
   providers: [RequestInterceptor],
   controllers: [AppController],

@@ -36,8 +36,8 @@ export default class GlobalExceptionFilter implements ExceptionFilter {
       message = exception.message;
     }
 
-    statusCode = statusCode ?? HttpStatus.INTERNAL_SERVER_ERROR;
-    message = message ?? 'Internal Server Error';
+    statusCode = statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
+    message = message || 'Internal Server Error';
 
     const responseBody = { statusCode, message };
 

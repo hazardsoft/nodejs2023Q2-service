@@ -34,6 +34,14 @@ export class PrismaService implements OnModuleInit {
     });
   }
 
+  async findUserByLogin(login: string): Promise<User> {
+    return await this.prisma.user.findUniqueOrThrow({
+      where: {
+        login,
+      },
+    });
+  }
+
   async findTrack(id: string): Promise<Track> {
     return await this.prisma.track.findUniqueOrThrow({
       where: {
