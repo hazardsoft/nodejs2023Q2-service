@@ -7,9 +7,13 @@ import { TrackModule } from './track/track.module';
 import { ArtistModule } from './artist/artist.module';
 import { FavsModule } from './favs/favs.module';
 import { PrismaModule } from './db/prisma.module';
-import { LoggerModule } from './logger/logger.module';
 import { RequestInterceptor } from './request.interceptor';
 import { AuthModule } from './auth/auth.module';
+import { APP_FILTER } from '@nestjs/core';
+import { AuthExceptionFilter } from './auth/auth.exception.filter';
+import { PrismaExceptionFilter } from './db/prisma.exception.filter';
+import { HttpExceptionFilter } from './common/http.exception.filter';
+import { CommonModule } from './common/CommonModule';
 
 @Module({
   imports: [
@@ -21,10 +25,23 @@ import { AuthModule } from './auth/auth.module';
     AlbumModule,
     FavsModule,
     PrismaModule,
-    LoggerModule,
+    CommonModule,
   ],
-  providers: [RequestInterceptor],
+  providers: [
+    RequestInterceptor,
+    {
+      provide: APP_FILTER,
+      useClass: AuthExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: PrismaExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
   controllers: [AppController],
-  exports: [RequestInterceptor],
 })
 export class AppModule {}

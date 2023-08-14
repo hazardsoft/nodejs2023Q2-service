@@ -18,6 +18,7 @@ export class AuthGuard implements CanActivate {
       SKIP_AUTH_META,
       context.getHandler(),
     );
+    this.logger.debug(`skip auth: ${Boolean(skipAuth)}`, AuthGuard.name);
     if (skipAuth) {
       return true;
     }

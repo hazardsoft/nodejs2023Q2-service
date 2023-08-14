@@ -1,28 +1,32 @@
-import {
-  ArgumentsHost,
-  Catch,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
-import { BaseExceptionFilter } from '@nestjs/core';
+import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
 import {
   FavoritesCreateError,
   FavoritesDeleteError,
   FavoritesError,
 } from '../errors';
+import BaseExceptionFilter from 'src/common/base.exception.filter';
 
 @Catch(FavoritesError)
-export class FavsExceptionFilter extends BaseExceptionFilter {
+export class FavsExceptionFilter extends BaseExceptionFilter<FavoritesError> {
   catch(exception: FavoritesError, host: ArgumentsHost) {
     if (exception instanceof FavoritesCreateError) {
-      return super.catch(
-        new UnprocessableEntityException(exception.message),
+      this.handleError(
+        {
+          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          message: exception.message,
+        },
         host,
       );
     }
     if (exception instanceof FavoritesDeleteError) {
-      return super.catch(new NotFoundException(exception.message), host);
+      return this.handleError(
+        {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: exception.message,
+        },
+        host,
+      );
     }
-    super.catch(exception, host);
+    this.handleError({ statusCode: null, message: null }, host);
   }
 }

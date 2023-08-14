@@ -1,16 +1,22 @@
-import { ArgumentsHost, Catch, UnauthorizedException } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
 import { AuthError, UnauthorizedError, InvalidTokenError } from './errors';
-import { BaseExceptionFilter } from '@nestjs/core';
+import ExceptionFilter from 'src/common/base.exception.filter';
 
 @Catch(AuthError)
-export class AuthExceptionFilter extends BaseExceptionFilter {
+export class AuthExceptionFilter extends ExceptionFilter<AuthError> {
   catch(exception: AuthError, host: ArgumentsHost) {
     if (exception instanceof UnauthorizedError) {
-      return super.catch(new UnauthorizedException(exception.message), host);
+      return this.handleError(
+        { statusCode: HttpStatus.UNAUTHORIZED, message: exception.message },
+        host,
+      );
     }
     if (exception instanceof InvalidTokenError) {
-      return super.catch(new UnauthorizedException(exception.message), host);
+      return this.handleError(
+        { statusCode: HttpStatus.UNAUTHORIZED, message: exception.message },
+        host,
+      );
     }
-    super.catch(exception, host);
+    this.handleError({ statusCode: null, message: null }, host);
   }
 }

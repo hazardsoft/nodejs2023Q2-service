@@ -17,10 +17,12 @@ export class RolesGuard implements CanActivate {
     private readonly logger: LoggingService,
     private readonly reflector: Reflector,
   ) {}
+
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const roles = this.reflector.get<Roles[]>(ROLES_META, context.getHandler());
+    this.logger.debug(`roles to verify: [${roles}]`, RolesGuard.name);
     if (!roles) {
       return true;
     }

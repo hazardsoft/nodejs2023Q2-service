@@ -1,6 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { AuthGuard } from './auth.guard';
-import { LoggerModule } from 'src/logger/logger.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RolesGuard } from './roles.guard';
@@ -10,10 +9,10 @@ import { AuthRepository } from './auth.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { CommonModule } from 'src/common/CommonModule';
 
 @Module({
   imports: [
-    LoggerModule,
     forwardRef(() => UserModule),
     PrismaModule,
     JwtModule.registerAsync({
@@ -28,17 +27,21 @@ import { APP_GUARD } from '@nestjs/core';
         };
       },
     }),
+    CommonModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
-    RolesGuard,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
     AuthService,
     AuthRepository,
   ],
   controllers: [AuthController],
-  exports: [LoggerModule, JwtModule],
+  exports: [JwtModule],
 })
 export class AuthModule {}

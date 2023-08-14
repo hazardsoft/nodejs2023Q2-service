@@ -6,8 +6,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { generateApiDocs } from './docsGenerator';
 import { LoggingService } from './logger/logging.service';
 import { RequestInterceptor } from './request.interceptor';
-import GlobalExceptionFilter from './exception.filter';
-import { AuthExceptionFilter } from './auth/auth.exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -41,13 +39,8 @@ async function bootstrap() {
     }),
   );
 
-  const logger = app.get(LoggingService);
-  app.useLogger(logger);
-
-  const interceptor = app.get(RequestInterceptor);
-  app.useGlobalInterceptors(interceptor);
-
-  app.useGlobalFilters(new GlobalExceptionFilter(logger, app.getHttpAdapter()));
+  app.useLogger(app.get(LoggingService));
+  app.useGlobalInterceptors(app.get(RequestInterceptor));
 
   const port = configService.get<number>('PORT') || 4000;
   await app.listen(port);
