@@ -11,8 +11,12 @@ services:
     volumes:
       - ./src:/app/src
       - ./test:/app/test
+      - rest-logs:/app/logs
     environment:
       - DATABASE_URL=${DATABASE_URL}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - LOG_TARGET=${LOG_TARGET}
+      - LOG_LIMIT=${LOG_LIMIT}
     depends_on:
       - database-service
   database-service:
@@ -36,3 +40,5 @@ volumes:
     name: pg-data
   pg-logs:
     name: pg-logs
+  rest-logs:
+    name: rest-logs

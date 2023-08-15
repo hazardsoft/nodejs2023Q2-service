@@ -1,74 +1,65 @@
 import { Injectable, LogLevel, LoggerService } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
-type LogHandler = (message: string, ...args) => void;
-
-const formatMessage = (message: string, ...args): string => {
-  const formatted =
-    args && args.length ? `[${args.join(':')}] - ${message}` : `${message}`;
-  return formatted;
-};
-
-const debugHandler: LogHandler = (message: string, ...args) => {
-  console.debug(formatMessage(message, args));
-};
-const errorHandler: LogHandler = (message: string, ...args) => {
-  console.error(formatMessage(message, args));
-};
-const logHandler: LogHandler = (message: string, ...args) => {
-  console.log(formatMessage(message, args));
-};
-const verboseHandler: LogHandler = (message: string, ...args) => {
-  console.log(formatMessage(message, args));
-};
-const warnHandler: LogHandler = (message: string, ...args) => {
-  console.warn(formatMessage(message, args));
-};
-
-const handlers: Record<LogLevel, LogHandler> = {
-  debug: debugHandler,
-  error: errorHandler,
-  log: logHandler,
-  verbose: verboseHandler,
-  warn: warnHandler,
-};
+import { LogTarget, Logger, LoggerConfig } from './interfaces';
+import { FileLogger } from './FileLogger';
+import { StdOutLogger } from './StdOutLogger';
 
 @Injectable()
 export class LoggingService implements LoggerService {
-  private activeHandlers: Record<LogLevel, LogHandler> = { ...handlers };
+  private config: LoggerConfig;
+  private loggers: Logger[];
 
   constructor(private readonly configService: ConfigService) {
-    this.setLogLevels(
-      configService.get<LogLevel[]>('LOG_LEVELS') ?? ['verbose'],
-    );
+    this.config = this.readConfig();
+    this.setTargets(this.config.LOG_TARGET);
+    this.setLogLevels(this.config.LOG_LEVEL);
+  }
+
+  private readConfig(): LoggerConfig {
+    const levels = this.configService
+      .get<string>('LOG_LEVEL')
+      .split(',') as LogLevel[];
+
+    const targets = this.configService
+      .get<string>('LOG_TARGET')
+      .split(',') as LogTarget[];
+
+    const limit = this.configService.get<number>('LOG_LIMIT');
+
+    return {
+      LOG_LEVEL: levels ?? ['verbose'],
+      LOG_TARGET: targets ?? ['stdout'],
+      LOG_LIMIT: limit ?? 1,
+    };
   }
 
   log(message: any, ...optionalParams: any[]) {
-    this.activeHandlers['log']?.apply(this, [message, ...optionalParams]);
+    this.loggers.forEach((l) => l.log(optionalParams.join(','), message));
   }
   error(message: any, ...optionalParams: any[]) {
-    this.activeHandlers['error']?.apply(this, [message, ...optionalParams]);
+    this.loggers.forEach((l) => l.error(optionalParams.join(','), message));
   }
   warn(message: any, ...optionalParams: any[]) {
-    this.activeHandlers['warn']?.apply(this, [message, ...optionalParams]);
+    this.loggers.forEach((l) => l.warn(optionalParams.join(','), message));
   }
   debug?(message: any, ...optionalParams: any[]) {
-    this.activeHandlers['debug']?.apply(this, [message, ...optionalParams]);
+    this.loggers.forEach((l) => l.debug(optionalParams.join(','), message));
   }
   verbose?(message: any, ...optionalParams: any[]) {
-    this.activeHandlers['verbose']?.apply(this, [message, ...optionalParams]);
+    this.loggers.forEach((l) => l.verbose(optionalParams.join(','), message));
   }
-  setLogLevels?(levels: LogLevel[]) {
-    if (levels.includes('verbose')) {
-      this.activeHandlers = { ...handlers };
-    } else {
-      Object.keys(handlers).forEach((logLevel) => {
-        if (levels.includes(logLevel as LogLevel)) {
-          this.activeHandlers[logLevel] = handlers[logLevel];
-        } else {
-          delete this.activeHandlers[logLevel];
-        }
-      });
-    }
+  setLogLevels?(levels: LogLevel[]): void {
+    this.loggers.forEach((l) => l.setLogLevels(levels));
+  }
+
+  setTargets(targets: LogTarget[]): void {
+    this.loggers = targets.map((t) => {
+      switch (t) {
+        case 'file':
+          return new FileLogger(this.config.LOG_LIMIT);
+        case 'stdout':
+          return new StdOutLogger();
+      }
+    });
   }
 }
