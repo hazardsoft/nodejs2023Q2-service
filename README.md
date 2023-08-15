@@ -91,7 +91,7 @@ If you still need to run application/tests w/o Docker (e.g. for better debug exp
 3. run `npx prisma generate` - generates Prisma Client
 4. run `npx prisma db seed` - seeds database started in p.1
 5. run `npm run start:dev` 
-6. run `npm test`
+6. run `npm run test:auth`
 
 ## Verifications
 
@@ -112,10 +112,10 @@ Run application in development mode.
 **Please refer to [Development Mode](./README.md#development-mode) for more details**
 
 Tests can be run either on host or in a container:
-1. to run tests on host run command `npm test` in a terminal (as usual);
+1. to run tests on host run command `npm run test:auth` in a terminal (as usual);
 2. to run tests in the container :
    1. open `Terminal` tab of REST API container;
-   2. run `npm test` command in the container's terminal (refer to the image below).
+   2. run `npm run test:auth` command in the container's terminal (refer to the image below).
     ![Image displaying running tests in REST API container in development mode](images/tests-dev-mode.png)
 
 
