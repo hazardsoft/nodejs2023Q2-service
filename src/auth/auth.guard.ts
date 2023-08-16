@@ -2,15 +2,15 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { LoggingService } from 'src/logger/logging.service';
 import { InvalidTokenError } from './errors';
-import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { SKIP_AUTH_META } from './decorators';
+import { CryptoService } from 'src/crypto/crypto.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly logger: LoggingService,
-    private readonly jwtService: JwtService,
+    private readonly cryptoService: CryptoService,
     private readonly reflector: Reflector,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
       throw new InvalidTokenError();
     }
     try {
-      const payload = await this.jwtService.verifyAsync(token);
+      const payload = await this.cryptoService.verifyAccessToken(token);
       this.logger.debug(
         `authentication verified: ${JSON.stringify(payload)}`,
         AuthGuard.name,

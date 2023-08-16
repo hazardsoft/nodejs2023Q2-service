@@ -22,8 +22,9 @@ git checkout docker
 
 1. [Install dependencies](./README.md#installing-dependencies)
 2. [Create .env config](./README.md#creating-env-config)
-3. [Run application with Docker](./README.md#running-application-with-docker)
-4. [Run application w/o Docker (optionally)](./README.md#running-application-wo-docker-optional)
+3. [Create logs folder](./README.md#creating-logs-folder)
+4. [Run application with Docker](./README.md#running-application-with-docker)
+5. [Run application w/o Docker (optionally)](./README.md#running-application-wo-docker-optional)
 
 ### Installing Dependencies
 
@@ -36,6 +37,10 @@ npm install
 Create 2 config files out of `.env.example` via copy/paste:
 1. `.env` file to be used to local development (set `POSTGRES_HOST` variable to `localhost`);
 2. `.env.docker` to be used by Docker (make sure that `POSTGRES_HOST` is set to `database-service`).
+
+### Creating logs Folder
+
+Create `logs` folder in the project root. All created logs (if any) will appear in this folder.
 
 ### Running Application with Docker
 

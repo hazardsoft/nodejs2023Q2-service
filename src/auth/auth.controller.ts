@@ -12,6 +12,7 @@ import { Auth } from './entity/auth.entity';
 import { AuthService } from './auth.service';
 import { SkipAuth } from './decorators';
 import { User } from 'src/user/entities/user.entity';
+import { RefreshTokenDto } from './dto/refresh.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -46,5 +47,22 @@ export class AuthController {
   })
   async login(@Body() dto: LoginDto): Promise<Auth> {
     return this.authService.login(dto);
+  }
+
+  @Post('refresh')
+  @SkipAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Refresh',
+    description: 'Refreshes access/refresh tokens',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request. body does not contain required fields',
+  })
+  @ApiForbiddenResponse({
+    description: 'Authentication failed',
+  })
+  async refresh(@Body() dto: RefreshTokenDto): Promise<Auth> {
+    return this.authService.refresh(dto);
   }
 }
