@@ -24,11 +24,11 @@ export class RequestInterceptor implements NestInterceptor {
     }), query params ${JSON.stringify(request.query)}, body: ${JSON.stringify(
       request.body,
     )}`;
-    const responseLog = `Response: status code ${response.statusCode}`;
 
     return next.handle().pipe(
       tap(() => {
         const duration = Date.now() - now;
+        const responseLog = `Response: status code ${response.statusCode}`;
         this.logger.debug(
           `${duration}ms${EOL}\t${requestLog}${EOL}\t${responseLog}`,
           RequestInterceptor.name,
