@@ -2,48 +2,45 @@ import { LogLevel } from '@nestjs/common';
 import { LogHandler, LogWriter, Logger } from './interfaces';
 import { EOL } from 'node:os';
 
-const formatMessage = (message: string, ...args): string => {
-  const formatted =
-    args && args.length
-      ? `[${args.join(':')}] - ${message}${EOL}`
-      : `${message}${EOL}`;
+const formatMessage = (source: string, message: string): string => {
+  const formatted = `[${source}] - ${message}${EOL}`;
   return formatted;
 };
 
 const debugHandler: LogHandler = (
   writer: LogWriter,
+  source: string,
   message: string,
-  ...args
 ) => {
-  writer.write(formatMessage(message, args));
+  writer.write(formatMessage(source, message));
 };
 const errorHandler: LogHandler = (
   writer: LogWriter,
+  source: string,
   message: string,
-  ...args
 ) => {
-  writer.write(formatMessage(message, args));
+  writer.write(formatMessage(source, message));
 };
 const logHandler: LogHandler = (
   writer: LogWriter,
+  source: string,
   message: string,
-  ...args
 ) => {
-  writer.write(formatMessage(message, args));
+  writer.write(formatMessage(source, message));
 };
 const verboseHandler: LogHandler = (
   writer: LogWriter,
+  source: string,
   message: string,
-  ...args
 ) => {
-  writer.write(formatMessage(message, args));
+  writer.write(formatMessage(source, message));
 };
 const warnHandler: LogHandler = (
   writer: LogWriter,
+  source: string,
   message: string,
-  ...args
 ) => {
-  writer.write(formatMessage(message, args));
+  writer.write(formatMessage(source, message));
 };
 
 const handlers: Record<LogLevel, LogHandler> = {
