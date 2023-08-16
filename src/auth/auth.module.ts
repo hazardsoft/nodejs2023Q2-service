@@ -2,7 +2,6 @@ import { Module, forwardRef } from '@nestjs/common';
 import { AuthGuard } from './auth.guard';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { RolesGuard } from './roles.guard';
 import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -30,10 +29,6 @@ import { CommonModule } from 'src/common/CommonModule';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
     },
     AuthService,
   ],
