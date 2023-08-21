@@ -1,6 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
-import { LoggingService } from 'src/logger/logging.service';
 import { InvalidTokenError } from './errors';
 import { Reflector } from '@nestjs/core';
 import { SKIP_AUTH_META } from './decorators';
@@ -9,7 +8,6 @@ import { CryptoService } from 'src/crypto/crypto.service';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private readonly logger: LoggingService,
     private readonly cryptoService: CryptoService,
     private readonly reflector: Reflector,
   ) {}
@@ -18,7 +16,6 @@ export class AuthGuard implements CanActivate {
       SKIP_AUTH_META,
       context.getHandler(),
     );
-    this.logger.debug(`skip auth: ${Boolean(skipAuth)}`, AuthGuard.name);
     if (skipAuth) {
       return true;
     }
@@ -30,16 +27,8 @@ export class AuthGuard implements CanActivate {
       throw new InvalidTokenError();
     }
     try {
-      const payload = await this.cryptoService.verifyAccessToken(token);
-      this.logger.debug(
-        `authentication verified: ${JSON.stringify(payload)}`,
-        AuthGuard.name,
-      );
+      await this.cryptoService.verifyAccessToken(token);
     } catch (e) {
-      this.logger.error(
-        `authentication failed: ${JSON.stringify(e)}`,
-        AuthGuard.name,
-      );
       throw new InvalidTokenError();
     }
 

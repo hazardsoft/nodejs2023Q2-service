@@ -12,6 +12,11 @@ export type CommonError = {
   message: string;
 };
 
+type ResponseBody = {
+  statusCode: number;
+  message: string;
+};
+
 export default abstract class ExceptionFilter<T>
   implements NestExceptionFilter<T>
 {
@@ -24,10 +29,15 @@ export default abstract class ExceptionFilter<T>
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    const responseBody = {
-      statusCode: error.statusCode ?? HttpStatus.INTERNAL_SERVER_ERROR,
-      message: error.message ?? 'Internal Server Error',
-    };
+    const responseBody: ResponseBody = error.statusCode
+      ? {
+          statusCode: error.statusCode,
+          message: error.message,
+        }
+      : {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Internal Server Error',
+        };
 
     this.logger.error(
       `error: ${JSON.stringify(responseBody)}`,

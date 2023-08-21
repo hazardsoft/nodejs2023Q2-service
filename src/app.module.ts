@@ -16,6 +16,7 @@ import { HttpExceptionFilter } from './common/http.exception.filter';
 import { CommonModule } from './common/CommonModule';
 import { CryptoService } from './crypto/crypto.service';
 import { CryptoModule } from './crypto/crypto.module';
+import GlobalExeptionFilter from './global.exception.filter';
 
 @Module({
   imports: [
@@ -32,6 +33,10 @@ import { CryptoModule } from './crypto/crypto.module';
   ],
   providers: [
     RequestInterceptor,
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExeptionFilter,
+    },
     {
       provide: APP_FILTER,
       useClass: AuthExceptionFilter,

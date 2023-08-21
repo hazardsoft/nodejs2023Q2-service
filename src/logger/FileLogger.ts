@@ -1,61 +1,73 @@
-import { BaseLogger } from './BaseLogger';
 import { resolve } from 'node:path';
 import { WriteStream, createWriteStream } from 'node:fs';
+import { LogWriter } from './interfaces';
+import { LogLevel } from '@nestjs/common';
 
-export class FileLogger extends BaseLogger {
-  private writeStream: WriteStream;
+export class FileLogger implements LogWriter {
+  private streams: Record<Partial<LogLevel>, WriteStream>;
   private limitInBytes: number;
 
   constructor(private readonly limitInKb: number) {
-    super();
-
     this.limitInBytes = limitInKb * 1024;
-    this.writeStream = this.createStream(this.getLogPath());
-    this.writer = {
-      write: async (s: string): Promise<void> => {
-        await this.writeLog(s);
-      },
+
+    const allStream = this.createStream(this.getLogPath());
+    const errorStream = this.createStream(this.getLogPath('error'));
+    this.streams = {
+      log: allStream,
+      debug: allStream,
+      warn: allStream,
+      verbose: allStream,
+      error: errorStream,
     };
+  }
+
+  async write(message: string, level: LogLevel): Promise<void> {
+    const stream: WriteStream = this.streams[level];
+    await this.write_internal(stream, message, level);
+
+    // 'error' log level is writtem to common log as well
+    if (level === 'error') {
+      const allStream: WriteStream = this.streams['verbose'];
+      await this.write_internal(allStream, message, level);
+    }
+  }
+
+  private async write_internal(
+    stream: WriteStream,
+    message: string,
+    level: LogLevel,
+  ): Promise<void> {
+    const isOk = stream.write(message, (error: Error | null | undefined) => {
+      if (error) {
+        console.error(
+          `error occured while writing logs:`,
+          JSON.stringify(error),
+        );
+      }
+      if (stream.bytesWritten >= this.limitInBytes) {
+        stream.end();
+        this.streams[level] = this.createStream(this.getLogPath(level));
+      }
+    });
+    if (!isOk) {
+      return new Promise((resolve) => {
+        stream.once('drain', resolve);
+      }).then(() => {
+        this.write_internal(stream, message, level);
+      });
+    }
   }
 
   private createStream(path: string): WriteStream {
     const stream = createWriteStream(path, {
       flags: 'a',
     });
-    stream.on('data', () => {
-      console.log(`*** wrote total: ${stream.bytesWritten}`);
-    });
     return stream;
   }
 
-  private getLogPath(): string {
-    const now = new Date();
-    const dateStr = `${now.getFullYear()}-${now.getMonth()}-${now.getDay()}T${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}-${now.getMilliseconds()}`;
-    return resolve(process.cwd(), `./logs/rest_${dateStr}.log`);
-  }
-
-  private async writeLog(log: string): Promise<void> {
-    const isOk = this.writeStream.write(
-      log,
-      (error: Error | null | undefined) => {
-        if (error) {
-          console.error(
-            `error occured while writing logs:`,
-            JSON.stringify(error),
-          );
-        }
-        if (this.writeStream.bytesWritten >= this.limitInBytes) {
-          this.writeStream.end();
-          this.writeStream = this.createStream(this.getLogPath());
-        }
-      },
-    );
-    if (!isOk) {
-      return new Promise((resolve) => {
-        this.writeStream.once('drain', resolve);
-      }).then(() => {
-        this.writeLog(log);
-      });
-    }
+  private getLogPath(level: LogLevel = 'debug'): string {
+    const date = new Date();
+    const dateStr = `${date.getFullYear()}-${date.getMonth()}-${date.getDay()}T${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}-${date.getMilliseconds()}`;
+    return resolve(`./logs/${dateStr}_${level}.log`);
   }
 }
