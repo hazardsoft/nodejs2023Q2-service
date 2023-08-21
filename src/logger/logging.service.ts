@@ -25,6 +25,7 @@ export class LoggingService implements LoggerService {
         `Uncaught exception: ${JSON.stringify(error)}, origin: ${origin}`,
         LoggingService.name,
       );
+      process.exit(1);
     });
     process.addListener(
       'unhandledRejection',
