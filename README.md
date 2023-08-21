@@ -80,7 +80,6 @@ Production mode is introduced for CI/CD use primarily and has number of distingu
 ```sh
 start:
 docker compose -f docker-compose-prod.yml --env-file .env.docker up --build --detach
-docker compose -f docker-compose-prod.yml --env-file .env.docker up --detach (in case you do not want to build docker images locally but want to pull them from Docker Hub instead)
 
 stop:
 docker compose -f docker-compose-prod.yml down
