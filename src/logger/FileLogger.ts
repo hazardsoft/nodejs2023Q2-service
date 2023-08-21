@@ -24,12 +24,6 @@ export class FileLogger implements LogWriter {
   async write(message: string, level: LogLevel): Promise<void> {
     const stream: WriteStream = this.streams[level];
     await this.write_internal(stream, message, level);
-
-    // 'error' log level is writtem to common log as well
-    if (level === 'error') {
-      const allStream: WriteStream = this.streams['verbose'];
-      await this.write_internal(allStream, message, level);
-    }
   }
 
   private async write_internal(
