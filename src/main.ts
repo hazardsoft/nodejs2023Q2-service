@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { generateApiDocs } from './docsGenerator';
+import { PrismaExceptionFilter } from './db/filters/prisma.client.exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,7 +25,7 @@ async function bootstrap() {
   });
   SwaggerModule.setup('doc', app, document);
 
-  if (process.env.NODE_ENV === 'development') {
+  if (Boolean(process.env.GEN_DOCS) === true) {
     await generateApiDocs(document);
   }
 
@@ -34,6 +35,14 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+
+  const httpAdapter = app.getHttpAdapter();
+  app.useGlobalFilters(new PrismaExceptionFilter(httpAdapter));
+
   await app.listen(port);
+
+  process.on('exit', () => {
+    console.warn('application exited!');
+  });
 }
 bootstrap();

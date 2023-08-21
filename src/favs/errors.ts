@@ -1,18 +1,13 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+export class FavoritesError extends Error {}
 
-export type FavType = 'artist' | 'album' | 'track';
-
-export class FavNotFoundError extends HttpException {
-  constructor(favId: string, type: FavType) {
-    super(`fav ${type} (id ${favId}) not found`, HttpStatus.NOT_FOUND);
+export class FavoritesCreateError extends FavoritesError {
+  constructor() {
+    super('can not be added to favorites, entity does not exist');
   }
 }
 
-export class InvalidFavId extends HttpException {
-  constructor(favId: string, type: FavType) {
-    super(
-      `fav ${type} (id ${favId}) does not exist`,
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
+export class FavoritesDeleteError extends FavoritesError {
+  constructor() {
+    super('can not be deleted from favorites, entity does not exist');
   }
 }

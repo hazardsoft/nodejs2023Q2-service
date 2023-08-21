@@ -21,16 +21,13 @@ import {
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { Track } from './entities/track.entity';
-import { FavsService } from 'src/favs/favs.service';
 import { config } from 'src/config';
+import { StatusCodes } from 'http-status-codes';
 
 @Controller('track')
 @ApiTags('Track')
 export class TrackController {
-  constructor(
-    private readonly trackService: TrackService,
-    private readonly favsService: FavsService,
-  ) {}
+  constructor(private readonly trackService: TrackService) {}
 
   @Post()
   @ApiOperation({
@@ -94,7 +91,7 @@ export class TrackController {
     return this.trackService.update(id, updateTrackDto);
   }
 
-  @HttpCode(204)
+  @HttpCode(StatusCodes.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({
     summary: 'Delete track',
@@ -113,11 +110,6 @@ export class TrackController {
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
   ): Promise<void> {
-    const removedTrack = await this.trackService.remove(id);
-    if (removedTrack) {
-      try {
-        await this.favsService.removeTrack(removedTrack.id);
-      } catch (e) {}
-    }
+    await this.trackService.remove(id);
   }
 }
