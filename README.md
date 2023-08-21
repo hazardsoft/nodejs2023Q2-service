@@ -15,7 +15,7 @@
 
 ```
 git clone https://github.com/hazardsoft/nodejs2023Q2-service
-git checkout docker
+git checkout auth
 ```
 
 ## Running Application
@@ -40,7 +40,7 @@ Create 2 config files out of `.env.example` via copy/paste:
 
 ### Creating logs Folder
 
-Create `logs` folder in the project root. All created logs (if any) will appear in this folder.
+Create `logs` folder in the project root. All created logs will appear in this folder.
 
 ### Running Application with Docker
 
