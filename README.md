@@ -101,14 +101,14 @@ If you still need to run application/tests w/o Docker (e.g. for better debug exp
 ## Verifications
 
 1. [Run Tests](./README.md#run-tests)
-2. [Custom Network](./README.md#custom-network)
-3. [Container Auto Restart](./README.md#container-auto-restart)
+2. [Application Logs](./README.md#application-logs)
+3. [Custom Network](./README.md#custom-network)
 4. [Application Auto Restart](./README.md#application-auto-restart)
 5. [Database data/logs in Volumes](./README.md#database-datalogs-in-volumes)
 6. [Docker Image Size](./README.md#docker-image-size)
 7. [Vulnerabilities Check](./README.md#vulnerabilities-check)
 8. [Docker Hub](./README.md#docker-hub)
-9. [Database Migrations](./README.md#database-migrations)
+9.  [Database Migrations](./README.md#database-migrations)
 10. [ESLint/Prettier](./README.md#eslintprettier)
 
 ### Run Tests
@@ -123,21 +123,25 @@ Tests can be run either on host or in a container:
    2. run `npm run test:auth` command in the container's terminal (refer to the image below).
     ![Image displaying running tests in REST API container in development mode](images/tests-dev-mode.png)
 
+### Application Logs
+
+N.B. Please create `logs` folder as described in [Creating logs folder](./README.md#creating-logs-folder) section first.
+
+By default 2 logs files are created:
+1. `./logs/{date}_debug.log` - contains logs with all levels (except of `error`);
+2. `./logs/{date}_error.log` - contains logs with `error` log level only.
+
+`.env.example` has several settings responsible for configuring logs:
+1. `LOG_LEVEL` defines log levels (log levels naming and values fully correspond Nest ones); can be array of log levels (e.g. `LOG_LEVEL=log,error`) or contain one log level only (e.g. `LOG_LEVEL=debug`);
+2. `LOG_TARGET` defines list of targets to write logs to; can be array of targets (e.g. `LOG_TARGET=stdout,file`) or contain one target only (e.g. `LOG_TARGET=file`);
+3. `LOG_LIMIT` defines max log file size in kilobytes (e.g. `LOG_LIMIT=20`): once file size limit is reached current log file is closed and a new one is created.
+
+If application is run in [Development Mode](./README.md#development-mode) docker volume `rest-logs` is created and stores all log files created by the application.
 
 ### Custom Network
 
 Custom network is configured and used if application is run in production mode only!
 **Please refer to [Production Mode](./README.md#production-mode) for more details.**
-
-### Container Auto Restart
-
-Convenience `/stop` endpoint is introduced with [Swagger Docs](http://localhost:4000/doc/#/Utils/stopApplication) to ease functionality verification; under the hood it terminates node process with with status `code=1` (refer to image below).
-![Image displaying /stop endpoint which facilitates testing of container auto-restart functionality](images/stop-endpoint.png)
-
-Log message `application exited!` displays in a running docker container under `Logs` tab of Docker Desktop (refer to image below).
-![Image displaying application restart](./images/container-auto-restart.png)
-
-Rest API container auto restarts after crash if application is run in production mode only! (as dev mode uses wrapper service to run watch mode). **Please refer to [Production Mode](./README.md#production-mode) for more details**
 
 ### Application Auto Restart
 
