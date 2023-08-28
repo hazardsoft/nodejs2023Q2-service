@@ -227,7 +227,7 @@ export class PrismaService implements OnModuleInit {
   async updateUserPassword(
     id: string,
     updateDto: UpdatePasswordDto,
-  ): Promise<User | undefined> {
+  ): Promise<User> {
     return await this.prisma.user.update({
       where: {
         id,

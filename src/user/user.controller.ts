@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UseFilters,
   ClassSerializerInterceptor,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -28,7 +29,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
 import { config } from 'src/config';
-import { StatusCodes } from 'http-status-codes';
 import { UserExceptionFilter } from './filters/user.exception.filter';
 
 @Controller('user')
@@ -98,7 +98,7 @@ export class UserController {
     return this.userService.updatePassword(id, updatePasswordDto);
   }
 
-  @HttpCode(StatusCodes.NO_CONTENT)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({
     summary: 'Delete user',

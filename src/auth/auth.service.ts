@@ -30,9 +30,8 @@ export class AuthService {
     }
     const user = await this.userService.findOneByLogin(dto.login);
     const payload = { userId: user.id, login: user.login };
-    const [accessToken, refreshToken] = await this.cryptoService.generateTokens(
-      payload,
-    );
+    const [accessToken, refreshToken] =
+      await this.cryptoService.generateTokens(payload);
 
     return plainToInstance(Auth, {
       accessToken,

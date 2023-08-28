@@ -1,6 +1,6 @@
 import { request } from '../lib';
 import { albumsRoutes } from '../endpoints';
-import { StatusCodes } from 'http-status-codes';
+import { HttpStatus } from '@nestjs/common';
 
 const createAlbumDto = {
   name: 'TEST_ALBUM',
@@ -16,7 +16,7 @@ describe('Album (e2e)', () => {
 
   describe('GET all albums', () => {
     it('should get UNAUTHORIZED without token presented', async () => {
-      await request.get(albumsRoutes.getAll).expect(StatusCodes.UNAUTHORIZED);
+      await request.get(albumsRoutes.getAll).expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -24,7 +24,7 @@ describe('Album (e2e)', () => {
     it('should get UNAUTHORIZED without token presented', async () => {
       await request
         .get(albumsRoutes.getById(randomUUID))
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -34,7 +34,7 @@ describe('Album (e2e)', () => {
         .post(albumsRoutes.create)
         .set(commonHeaders)
         .send(createAlbumDto)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -50,7 +50,7 @@ describe('Album (e2e)', () => {
           year: updatedYear,
           artistId: randomUUID,
         })
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -59,7 +59,7 @@ describe('Album (e2e)', () => {
       await request
         .delete(albumsRoutes.delete(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 });

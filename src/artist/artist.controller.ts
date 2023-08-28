@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   HttpCode,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -22,7 +23,6 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { config } from 'src/config';
-import { StatusCodes } from 'http-status-codes';
 
 @Controller('artist')
 @ApiTags('Artist')
@@ -86,7 +86,7 @@ export class ArtistController {
     return this.artistService.update(id, updateArtistDto);
   }
 
-  @HttpCode(StatusCodes.NO_CONTENT)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({
     summary: 'Delete artist',

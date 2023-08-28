@@ -1,6 +1,6 @@
 import { request } from '../lib';
-import { StatusCodes } from 'http-status-codes';
 import { usersRoutes } from '../endpoints';
+import { HttpStatus } from '@nestjs/common';
 
 const createUserDto = {
   login: 'TEST_LOGIN',
@@ -18,7 +18,7 @@ describe('Users (e2e)', () => {
       await request
         .get(usersRoutes.getAll)
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -27,7 +27,7 @@ describe('Users (e2e)', () => {
       await request
         .get(usersRoutes.getById(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -37,7 +37,7 @@ describe('Users (e2e)', () => {
         .post(usersRoutes.create)
         .set(commonHeaders)
         .send(createUserDto)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -50,7 +50,7 @@ describe('Users (e2e)', () => {
           oldPassword: createUserDto.password,
           newPassword: 'NEW_PASSWORD',
         })
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -59,7 +59,7 @@ describe('Users (e2e)', () => {
       await request
         .delete(usersRoutes.delete(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 });

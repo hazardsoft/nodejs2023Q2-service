@@ -1,6 +1,6 @@
 import { request } from '../lib';
-import { StatusCodes } from 'http-status-codes';
 import { favoritesRoutes } from '../endpoints';
+import { HttpStatus } from '@nestjs/common';
 
 // Probability of collisions for UUID is almost zero
 const randomUUID = '0a35dd62-e09f-444b-a628-f4e7c6954f57';
@@ -13,7 +13,7 @@ describe('Favorites (e2e)', () => {
       await request
         .get(favoritesRoutes.getAll)
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -22,7 +22,7 @@ describe('Favorites (e2e)', () => {
       await request
         .post(favoritesRoutes.albums(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -31,7 +31,7 @@ describe('Favorites (e2e)', () => {
       await request
         .post(favoritesRoutes.artists(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -40,7 +40,7 @@ describe('Favorites (e2e)', () => {
       await request
         .post(favoritesRoutes.tracks(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -49,7 +49,7 @@ describe('Favorites (e2e)', () => {
       await request
         .delete(favoritesRoutes.albums(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -58,7 +58,7 @@ describe('Favorites (e2e)', () => {
       await request
         .delete(favoritesRoutes.artists(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -67,7 +67,7 @@ describe('Favorites (e2e)', () => {
       await request
         .delete(favoritesRoutes.tracks(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 });

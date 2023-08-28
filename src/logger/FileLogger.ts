@@ -18,6 +18,7 @@ export class FileLogger implements LogWriter {
       warn: allStream,
       verbose: allStream,
       error: errorStream,
+      fatal: errorStream,
     };
   }
 

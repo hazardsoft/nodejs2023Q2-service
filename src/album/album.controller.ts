@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Put,
   HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -23,7 +24,6 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { config } from 'src/config';
-import { StatusCodes } from 'http-status-codes';
 
 @Controller('album')
 @ApiTags('Album')
@@ -93,7 +93,7 @@ export class AlbumController {
     return this.albumService.update(id, updateArtistDto);
   }
 
-  @HttpCode(StatusCodes.NO_CONTENT)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({
     summary: 'Delete album',

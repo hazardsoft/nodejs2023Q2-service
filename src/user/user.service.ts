@@ -31,18 +31,18 @@ export class UserService {
     return plainToInstance(User, await this.repository.findMany());
   }
 
-  async findOne(id: string): Promise<User | undefined> {
+  async findOne(id: string): Promise<User> {
     return plainToInstance(User, await this.repository.findOne(id));
   }
 
-  async findOneByLogin(login: string): Promise<User | undefined> {
+  async findOneByLogin(login: string): Promise<User> {
     return plainToInstance(User, await this.repository.findOneByLogin(login));
   }
 
   async updatePassword(
     id: string,
     updatePasswordDto: UpdatePasswordDto,
-  ): Promise<User | undefined> {
+  ): Promise<User> {
     const user = await this.repository.findOne(id);
     const isPasswordMatch = await this.cryptoService.isPasswordMatch(
       updatePasswordDto.oldPassword,
@@ -72,7 +72,7 @@ export class UserService {
     return isPasswordMatch;
   }
 
-  async remove(id: string): Promise<User | undefined> {
+  async remove(id: string): Promise<User> {
     return plainToInstance(User, await this.repository.delete(id));
   }
 }

@@ -5,16 +5,16 @@ import {
   HttpStatus,
   Inject,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { HttpAdapterHost } from '@nestjs/core';
 
 export type CommonError = {
-  statusCode: number;
-  message: string;
+  statusCode: number | null;
+  message: string | null;
 };
 
 type ResponseBody = {
   statusCode: number;
-  message: string;
+  message: string | null;
 };
 
 export default abstract class ExceptionFilter<T>
@@ -23,11 +23,14 @@ export default abstract class ExceptionFilter<T>
   @Inject()
   private readonly logger: LoggingService;
 
+  @Inject()
+  private readonly httpAdapterHost: HttpAdapterHost;
+
   abstract catch(exception: T, host: ArgumentsHost): void;
 
   handleError(error: CommonError, host: ArgumentsHost): void {
+    const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
 
     const responseBody: ResponseBody = error.statusCode
       ? {
@@ -44,6 +47,6 @@ export default abstract class ExceptionFilter<T>
       ExceptionFilter.name,
     );
 
-    response.status(responseBody.statusCode).json(responseBody);
+    httpAdapter.reply(ctx.getResponse(), responseBody, responseBody.statusCode);
   }
 }

@@ -1,6 +1,6 @@
 import { request } from '../lib';
-import { StatusCodes } from 'http-status-codes';
 import { tracksRoutes } from '../endpoints';
+import { HttpStatus } from '@nestjs/common';
 
 const createTrackDto = {
   name: 'TEST_TRACK',
@@ -20,7 +20,7 @@ describe('Tracks (e2e)', () => {
       await request
         .get(tracksRoutes.getAll)
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -29,7 +29,7 @@ describe('Tracks (e2e)', () => {
       await request
         .get(tracksRoutes.getById(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -39,7 +39,7 @@ describe('Tracks (e2e)', () => {
         .post(tracksRoutes.create)
         .set(commonHeaders)
         .send(createTrackDto)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -54,7 +54,7 @@ describe('Tracks (e2e)', () => {
           artistId: createTrackDto.artistId,
           albumId: createTrackDto.albumId,
         })
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -63,7 +63,7 @@ describe('Tracks (e2e)', () => {
       await request
         .delete(tracksRoutes.delete(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 });

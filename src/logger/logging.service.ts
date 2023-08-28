@@ -41,13 +41,13 @@ export class LoggingService implements LoggerService {
   }
 
   private readConfig(): LoggerConfig {
-    const levels = this.configService
-      .get<string>('LOG_LEVEL')
-      .split(',') as LogLevel[];
+    const levels = String(this.configService.get<string>('LOG_LEVEL')).split(
+      ',',
+    ) as LogLevel[];
 
-    const targets = this.configService
-      .get<string>('LOG_TARGET')
-      .split(',') as LogTarget[];
+    const targets = String(this.configService.get<string>('LOG_TARGET')).split(
+      ',',
+    ) as LogTarget[];
 
     const limit = this.configService.get<number>('LOG_LIMIT');
 
@@ -99,13 +99,13 @@ export class LoggingService implements LoggerService {
     }
     this.writeLog(optionalParams.join(','), message, 'debug');
   }
-  verbose?(message: any, ...optionalParams: any[]) {
+  verbose(message: any, ...optionalParams: any[]) {
     if (!this.isLevelEnabled('verbose')) {
       return;
     }
     this.writeLog(optionalParams.join(','), message, 'verbose');
   }
-  setLogLevels?(levels: LogLevel[]): void {
+  setLogLevels(levels: LogLevel[]): void {
     this.config.logLevels = levels;
   }
   setTargets(targets: LogTarget[]): void {

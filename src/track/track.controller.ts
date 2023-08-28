@@ -8,6 +8,7 @@ import {
   Delete,
   ParseUUIDPipe,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -23,7 +24,6 @@ import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { Track } from './entities/track.entity';
 import { config } from 'src/config';
-import { StatusCodes } from 'http-status-codes';
 
 @Controller('track')
 @ApiTags('Track')
@@ -93,7 +93,7 @@ export class TrackController {
     return this.trackService.update(id, updateTrackDto);
   }
 
-  @HttpCode(StatusCodes.NO_CONTENT)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({
     summary: 'Delete track',

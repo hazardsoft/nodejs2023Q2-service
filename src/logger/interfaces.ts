@@ -14,6 +14,7 @@ export const LogLevelValues: Record<LogLevel, number> = {
   log: 2,
   warn: 3,
   error: 4,
+  fatal: 5,
 } as const;
 
 export type LogWriter = {
