@@ -13,17 +13,15 @@ import {
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { Album } from './entities/album.entity';
-import {
-  ApiBadRequestResponse,
-  ApiNotFoundResponse,
-  ApiTags,
-  ApiOperation,
-  ApiCreatedResponse,
-  ApiNoContentResponse,
-  getSchemaPath,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { config } from 'src/config';
+import {
+  ApiCreateDecorators,
+  ApiDeleteDecorators,
+  ApiGetAllDecorators,
+  ApiGetOneDecorators,
+  ApiPutDecorators,
+} from 'src/common/decorators';
 
 @Controller('album')
 @ApiTags('Album')
@@ -32,41 +30,19 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Post()
-  @ApiOperation({
-    summary: 'Add new album',
-    description: 'Add new album information',
-  })
-  @ApiCreatedResponse({
-    description: 'Album is created',
-    schema: { $ref: getSchemaPath(Album) },
-  })
-  @ApiBadRequestResponse({
-    description: 'Bad request. body does not contain required fields',
-  })
+  @ApiCreateDecorators(Album.name)
   async create(@Body() createTrackDto: CreateAlbumDto): Promise<Album> {
     return this.albumService.create(createTrackDto);
   }
 
   @Get()
-  @ApiOperation({
-    summary: 'Get albums list',
-    description: 'Gets all library albums list',
-  })
+  @ApiGetAllDecorators(Album.name)
   async findAll(): Promise<Album[]> {
     return this.albumService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({
-    summary: 'Get single album by id',
-    description: 'Gets single album by id',
-  })
-  @ApiBadRequestResponse({
-    description: 'Bad request. albumId is invalid (not uuid)',
-  })
-  @ApiNotFoundResponse({
-    description: 'Album was not found',
-  })
+  @ApiGetOneDecorators(Album.name)
   async findOne(
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
@@ -75,16 +51,7 @@ export class AlbumController {
   }
 
   @Put(':id')
-  @ApiOperation({
-    summary: 'Update album information',
-    description: 'Update library album information by UUID',
-  })
-  @ApiBadRequestResponse({
-    description: 'Bad request. albumId is invalid (not uuid)',
-  })
-  @ApiNotFoundResponse({
-    description: 'Album was not found',
-  })
+  @ApiPutDecorators(Album.name)
   async update(
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
@@ -93,19 +60,9 @@ export class AlbumController {
     return this.albumService.update(id, updateArtistDto);
   }
 
-  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  @ApiOperation({
-    summary: 'Delete album',
-    description: 'Delete album from library',
-  })
-  @ApiNoContentResponse({ description: 'Deleted successfully' })
-  @ApiBadRequestResponse({
-    description: 'Bad request. albumId is invalid (not uuid)',
-  })
-  @ApiNotFoundResponse({
-    description: 'Album was not found',
-  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiDeleteDecorators(Album.name)
   async remove(
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
