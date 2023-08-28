@@ -1,14 +1,5 @@
 openapi: 3.0.0
 paths:
-  /throw:
-    post:
-      operationId: stopApplication
-      parameters: []
-      responses:
-        "201":
-          description: ""
-      tags:
-        - Utils
   /auth/signup:
     post:
       operationId: signup
@@ -668,8 +659,7 @@ info:
   version: 1.0.0
   contact: {}
 tags: []
-servers:
-  - url: /
+servers: []
 components:
   securitySchemes:
     bearer:
