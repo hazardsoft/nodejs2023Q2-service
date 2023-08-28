@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNoContentResponse,
@@ -34,6 +35,7 @@ import { UserExceptionFilter } from './filters/user.exception.filter';
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(UserExceptionFilter)
 @ApiTags('User')
+@ApiBearerAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

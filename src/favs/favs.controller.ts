@@ -18,6 +18,7 @@ import {
   ApiTags,
   ApiOperation,
   ApiCreatedResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { config } from 'src/config';
 import { StatusCodes } from 'http-status-codes';
@@ -30,6 +31,7 @@ type FavCreateResponse = {
 @Controller('favs')
 @UseFilters(FavsExceptionFilter)
 @ApiTags('Favs')
+@ApiBearerAuth()
 export class FavsController {
   constructor(private readonly favsService: FavsService) {}
 

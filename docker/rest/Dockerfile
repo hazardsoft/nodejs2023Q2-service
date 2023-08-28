@@ -14,5 +14,7 @@ COPY --from=build-stage ["app/node_modules/", "./node_modules/"]
 COPY --from=build-stage ["app/prisma/", "./prisma/"]
 COPY --from=build-stage ["app/package.json", "app/package-lock.json", "./"]
 COPY --from=build-stage ["app/tsconfig.json", "app/tsconfig.build.json", "./"]
+RUN mkdir logs
+VOLUME /app/logs
 EXPOSE 4000/tcp
 CMD ["dist/main.js"]

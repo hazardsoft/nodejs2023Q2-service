@@ -19,12 +19,14 @@ import {
   ApiOperation,
   ApiCreatedResponse,
   getSchemaPath,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { config } from 'src/config';
 import { StatusCodes } from 'http-status-codes';
 
 @Controller('artist')
 @ApiTags('Artist')
+@ApiBearerAuth()
 export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 

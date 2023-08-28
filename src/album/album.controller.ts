@@ -20,12 +20,14 @@ import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   getSchemaPath,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { config } from 'src/config';
 import { StatusCodes } from 'http-status-codes';
 
 @Controller('album')
 @ApiTags('Album')
+@ApiBearerAuth()
 export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
