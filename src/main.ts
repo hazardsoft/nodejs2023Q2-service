@@ -4,18 +4,22 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { generateApiDocs } from './docsGenerator';
+import { LoggingService } from './logger/logging.service';
+import { RequestInterceptor } from './request.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
 
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT') || 4000;
 
   const config = new DocumentBuilder()
     .setTitle('Home Library Service')
     .setDescription('Home music library service')
     .setVersion('1.0.0')
     .addServer('/')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {
@@ -24,7 +28,7 @@ async function bootstrap() {
   });
   SwaggerModule.setup('doc', app, document);
 
-  if (process.env.NODE_ENV === 'development') {
+  if (Boolean(process.env.GEN_DOCS) === true) {
     await generateApiDocs(document);
   }
 
@@ -34,6 +38,15 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+
+  app.useLogger(app.get(LoggingService));
+  app.useGlobalInterceptors(app.get(RequestInterceptor));
+
+  const port = configService.get<number>('PORT') || 4000;
   await app.listen(port);
+
+  process.on('exit', () => {
+    console.warn('application exited!');
+  });
 }
 bootstrap();

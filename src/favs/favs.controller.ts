@@ -6,15 +6,9 @@ import {
   Delete,
   ParseUUIDPipe,
   HttpCode,
+  UseFilters,
 } from '@nestjs/common';
 import { FavsService } from './favs.service';
-import { TrackService } from 'src/track/track.service';
-import { AlbumService } from 'src/album/album.service';
-import { ArtistService } from 'src/artist/artist.service';
-import { TrackNotFoundError } from 'src/track/errors';
-import { InvalidFavId } from './errors';
-import { AlbumNotFoundError } from 'src/album/errors';
-import { ArtistNotFoundError } from 'src/artist/errors';
 import { Favorites } from './entities/fav.entity';
 import {
   ApiBadRequestResponse,
@@ -24,21 +18,22 @@ import {
   ApiTags,
   ApiOperation,
   ApiCreatedResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { config } from 'src/config';
+import { StatusCodes } from 'http-status-codes';
+import { FavsExceptionFilter } from './filters/favs.exception.filter';
 
 type FavCreateResponse = {
   message: string;
 };
+
 @Controller('favs')
+@UseFilters(FavsExceptionFilter)
 @ApiTags('Favs')
+@ApiBearerAuth()
 export class FavsController {
-  constructor(
-    private readonly favsService: FavsService,
-    private readonly trackService: TrackService,
-    private readonly artistService: ArtistService,
-    private readonly albumService: AlbumService,
-  ) {}
+  constructor(private readonly favsService: FavsService) {}
 
   @Get()
   @ApiOperation({
@@ -46,15 +41,7 @@ export class FavsController {
     description: 'Gets all favorites movies, tracks and books',
   })
   async findAll(): Promise<Favorites> {
-    const favs = await this.favsService.findAll();
-    const artists = await this.artistService.findAll();
-    const albums = await this.albumService.findAll();
-    const tracks = await this.trackService.findAll();
-    return {
-      artists: artists.filter((a) => favs.artists.includes(a.id)),
-      albums: albums.filter((a) => favs.albums.includes(a.id)),
-      tracks: tracks.filter((t) => favs.tracks.includes(t.id)),
-    };
+    return await this.favsService.findAll();
   }
 
   @Post('/track/:id')
@@ -73,22 +60,13 @@ export class FavsController {
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
   ): Promise<FavCreateResponse> {
-    try {
-      const track = await this.trackService.findOne(id);
-      const isTrackCreated = await this.favsService.createTrack(track?.id);
-      if (isTrackCreated) {
-        return {
-          message: `track fav (id ${id}) is created`,
-        };
-      }
-    } catch (e) {
-      if (e instanceof TrackNotFoundError) {
-        throw new InvalidFavId(id, 'track');
-      }
-    }
+    await this.favsService.createTrack(id);
+    return {
+      message: `track fav (id ${id}) is created`,
+    };
   }
 
-  @HttpCode(204)
+  @HttpCode(StatusCodes.NO_CONTENT)
   @Delete('/track/:id')
   @ApiOperation({
     summary: 'Delete track from favorites',
@@ -126,22 +104,13 @@ export class FavsController {
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
   ): Promise<FavCreateResponse> {
-    try {
-      const album = await this.albumService.findOne(id);
-      const isAlbumCreated = await this.favsService.createAlbum(album?.id);
-      if (isAlbumCreated) {
-        return {
-          message: `album fav (id ${id}) is created`,
-        };
-      }
-    } catch (e) {
-      if (e instanceof AlbumNotFoundError) {
-        throw new InvalidFavId(id, 'album');
-      }
-    }
+    await this.favsService.createAlbum(id);
+    return {
+      message: `album fav (id ${id}) is created`,
+    };
   }
 
-  @HttpCode(204)
+  @HttpCode(StatusCodes.NO_CONTENT)
   @Delete('/album/:id')
   @ApiOperation({
     summary: 'Delete album from favorites',
@@ -179,22 +148,13 @@ export class FavsController {
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
   ): Promise<FavCreateResponse> {
-    try {
-      const artist = await this.artistService.findOne(id);
-      const isArtistCreated = await this.favsService.createArtist(artist?.id);
-      if (isArtistCreated) {
-        return {
-          message: `artist fav (id ${id}) is created`,
-        };
-      }
-    } catch (e) {
-      if (e instanceof ArtistNotFoundError) {
-        throw new InvalidFavId(id, 'album');
-      }
-    }
+    await this.favsService.createArtist(id);
+    return {
+      message: `artist fav (id ${id}) is created`,
+    };
   }
 
-  @HttpCode(204)
+  @HttpCode(StatusCodes.NO_CONTENT)
   @Delete('/artist/:id')
   @ApiOperation({
     summary: 'Delete artist from favorites',

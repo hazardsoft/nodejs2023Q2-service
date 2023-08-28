@@ -1,53 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { Artist } from './entities/artist.entity';
-import { ArtistNotFoundError } from './errors';
+import { plainToInstance } from 'class-transformer';
+import ArtistRepository from './artist.repository';
 
 @Injectable()
 export class ArtistService {
-  private readonly artists: Artist[] = [];
+  constructor(private readonly repository: ArtistRepository) {}
 
   async create(createArtistDto: CreateArtistDto): Promise<Artist> {
-    const artist = new Artist();
-    artist.id = uuidv4();
-    Object.assign(artist, createArtistDto);
-
-    this.artists.push(artist);
-    return artist;
+    return plainToInstance(
+      Artist,
+      await this.repository.create(createArtistDto),
+    );
   }
 
   async findAll(): Promise<Artist[]> {
-    return this.artists.slice();
+    return plainToInstance(Artist, await this.repository.findMany());
   }
 
-  async findOne(id: string): Promise<Artist | undefined> {
-    const artist = this.artists.find((a) => a.id === id);
-    if (!artist) {
-      throw new ArtistNotFoundError(id);
-    }
-    return artist;
+  async findOne(id: string): Promise<Artist> {
+    return plainToInstance(Artist, await this.repository.findOne(id));
   }
 
-  async update(
-    id: string,
-    updateArtistDto: CreateArtistDto,
-  ): Promise<Artist | undefined> {
-    const artist = this.artists.find((a) => a.id === id);
-    if (!artist) {
-      throw new ArtistNotFoundError(id);
-    }
-    Object.assign(artist, updateArtistDto);
-    return artist;
+  async findSome(ids: string[]): Promise<Artist[]> {
+    return plainToInstance(Artist, await this.repository.findSome(ids));
   }
 
-  async remove(id: string): Promise<Artist | undefined> {
-    const foundIndex = this.artists.findIndex((u) => u.id === id);
-    if (foundIndex === -1) {
-      throw new ArtistNotFoundError(id);
-    }
-    const artist = this.artists.splice(foundIndex, 1).shift();
+  async update(id: string, updateArtistDto: CreateArtistDto): Promise<Artist> {
+    return plainToInstance(
+      Artist,
+      await this.repository.update(id, updateArtistDto),
+    );
+  }
 
-    return artist;
+  async remove(id: string): Promise<Artist> {
+    return plainToInstance(Artist, await this.repository.delete(id));
   }
 }

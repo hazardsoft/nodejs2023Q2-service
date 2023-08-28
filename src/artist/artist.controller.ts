@@ -12,11 +12,6 @@ import {
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { Artist } from './entities/artist.entity';
-import { TrackService } from 'src/track/track.service';
-import { CreateTrackDto } from 'src/track/dto/create-track.dto';
-import { AlbumService } from 'src/album/album.service';
-import { CreateAlbumDto } from 'src/album/dto/create-album.dto';
-import { FavsService } from 'src/favs/favs.service';
 import {
   ApiBadRequestResponse,
   ApiNotFoundResponse,
@@ -24,18 +19,16 @@ import {
   ApiOperation,
   ApiCreatedResponse,
   getSchemaPath,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { config } from 'src/config';
+import { StatusCodes } from 'http-status-codes';
 
 @Controller('artist')
 @ApiTags('Artist')
+@ApiBearerAuth()
 export class ArtistController {
-  constructor(
-    private readonly artistService: ArtistService,
-    private readonly trackService: TrackService,
-    private readonly albumService: AlbumService,
-    private readonly favsService: FavsService,
-  ) {}
+  constructor(private readonly artistService: ArtistService) {}
 
   @Post()
   @ApiOperation({ summary: 'Add new artist', description: 'Add new artist' })
@@ -93,7 +86,7 @@ export class ArtistController {
     return this.artistService.update(id, updateArtistDto);
   }
 
-  @HttpCode(204)
+  @HttpCode(StatusCodes.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({
     summary: 'Delete artist',
@@ -109,33 +102,6 @@ export class ArtistController {
     @Param('id', new ParseUUIDPipe({ version: config.uuid.version }))
     id: string,
   ): Promise<void> {
-    const removedArtist = await this.artistService.remove(id);
-    if (removedArtist) {
-      const tracks = await this.trackService.findAll();
-      const tracksToUpdate = tracks.filter(
-        (t) => t.artistId === removedArtist.id,
-      );
-      tracksToUpdate.forEach((t) => {
-        const trackUpdateDto = Object.assign({ ...t }, <
-          Partial<CreateTrackDto>
-        >{ artistId: null });
-        this.trackService.update(t.id, trackUpdateDto);
-      });
-
-      const albums = await this.albumService.findAll();
-      const albumsToUpdate = albums.filter(
-        (a) => a.artistId === removedArtist.id,
-      );
-      albumsToUpdate.forEach((a) => {
-        const albumUpdateDto = Object.assign({ ...a }, <
-          Partial<CreateAlbumDto>
-        >{ artistId: null });
-        this.albumService.update(a.id, albumUpdateDto);
-      });
-
-      try {
-        await this.favsService.removeArtist(removedArtist.id);
-      } catch (e) {}
-    }
+    await this.artistService.remove(id);
   }
 }

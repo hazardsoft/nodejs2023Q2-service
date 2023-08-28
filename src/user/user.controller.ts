@@ -9,10 +9,12 @@ import {
   HttpCode,
   ParseUUIDPipe,
   UseInterceptors,
+  UseFilters,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNoContentResponse,
@@ -26,10 +28,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
 import { config } from 'src/config';
+import { StatusCodes } from 'http-status-codes';
+import { UserExceptionFilter } from './filters/user.exception.filter';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
+@UseFilters(UserExceptionFilter)
 @ApiTags('User')
+@ApiBearerAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -92,7 +98,7 @@ export class UserController {
     return this.userService.updatePassword(id, updatePasswordDto);
   }
 
-  @HttpCode(204)
+  @HttpCode(StatusCodes.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({
     summary: 'Delete user',

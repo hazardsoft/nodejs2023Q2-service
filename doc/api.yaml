@@ -1,5 +1,81 @@
 openapi: 3.0.0
 paths:
+  /throw:
+    post:
+      operationId: stopApplication
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+        - Utils
+  /auth/signup:
+    post:
+      operationId: signup
+      summary: Sign up
+      description: Signs up as a new user
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupDto"
+      responses:
+        "201":
+          description: The user has been signed up
+        "400":
+          description: Bad request. body does not contain required fields
+      tags: &a1
+        - Auth
+  /auth/login:
+    post:
+      operationId: login
+      summary: Login
+      description: Logins an user via login/password
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Auth"
+        "400":
+          description: Bad request. body does not contain required fields
+        "403":
+          description: Authentication failed
+      tags: *a1
+  /auth/refresh:
+    post:
+      operationId: refresh
+      summary: Refresh
+      description: Refreshes access/refresh tokens
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Auth"
+        "400":
+          description: Bad request. body does not contain required fields
+        "403":
+          description: Authentication failed
+      tags: *a1
   /user:
     post:
       operationId: create
@@ -21,8 +97,10 @@ paths:
                 $ref: "#/components/schemas/User"
         "400":
           description: Bad request. body does not contain required fields
-      tags: &a1
+      tags: &a2
         - User
+      security: &a3
+        - bearer: []
     get:
       operationId: findAll
       summary: Get all users
@@ -37,7 +115,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
-      tags: *a1
+      tags: *a2
+      security: *a3
   "/user/{id}":
     get:
       operationId: findOne
@@ -60,7 +139,8 @@ paths:
           description: Bad request. userId is invalid (not uuid)
         "404":
           description: User not found
-      tags: *a1
+      tags: *a2
+      security: *a3
     put:
       operationId: update
       summary: Update a user's password
@@ -90,7 +170,8 @@ paths:
           description: oldPassword is wrong
         "404":
           description: User not found
-      tags: *a1
+      tags: *a2
+      security: *a3
     delete:
       operationId: remove
       summary: Delete user
@@ -108,7 +189,8 @@ paths:
           description: Bad request. userId is invalid (not uuid)
         "404":
           description: User not found
-      tags: *a1
+      tags: *a2
+      security: *a3
   /track:
     post:
       operationId: create
@@ -130,8 +212,10 @@ paths:
                 $ref: "#/components/schemas/Track"
         "400":
           description: Bad request. body does not contain required fields
-      tags: &a2
+      tags: &a4
         - Track
+      security: &a5
+        - bearer: []
     get:
       operationId: findAll
       summary: Get tracks list
@@ -146,7 +230,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Track"
-      tags: *a2
+      tags: *a4
+      security: *a5
   "/track/{id}":
     get:
       operationId: findOne
@@ -169,7 +254,8 @@ paths:
           description: Bad request. trackId is invalid (not uuid)
         "404":
           description: Track was not found
-      tags: *a2
+      tags: *a4
+      security: *a5
     put:
       operationId: update
       summary: Update track information
@@ -197,7 +283,8 @@ paths:
           description: Bad request. trackId is invalid (not uuid)
         "404":
           description: Track was not found
-      tags: *a2
+      tags: *a4
+      security: *a5
     delete:
       operationId: remove
       summary: Delete track
@@ -215,133 +302,8 @@ paths:
           description: Bad request. trackId is invalid (not uuid)
         "404":
           description: Track was not found
-      tags: *a2
-  /favs:
-    get:
-      operationId: findAll
-      summary: Get all favorites
-      description: Gets all favorites movies, tracks and books
-      parameters: []
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Favorites"
-      tags: &a3
-        - Favs
-  "/favs/track/{id}":
-    post:
-      operationId: createTrackFav
-      summary: Add track to the favorites
-      description: Add track to the favorites
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "201":
-          description: Added successfully
-        "400":
-          description: Bad. trackId is invalid (not uuid)
-        "422":
-          description: Track with id doesn't exist
-      tags: *a3
-    delete:
-      operationId: removeTrackFav
-      summary: Delete track from favorites
-      description: Delete track from favorites
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "204":
-          description: Deleted successfully
-        "400":
-          description: Bad. trackId is invalid (not uuid)
-        "404":
-          description: Track was not found
-      tags: *a3
-  "/favs/album/{id}":
-    post:
-      operationId: createAlbumFav
-      summary: Add album to the favorites
-      description: Add album to the favorites
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "201":
-          description: Added successfully
-        "400":
-          description: Bad. albumId is invalid (not uuid)
-        "422":
-          description: Album with id doesn't exist
-      tags: *a3
-    delete:
-      operationId: removeAlbumFav
-      summary: Delete album from favorites
-      description: Delete album from favorites
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "204":
-          description: Deleted successfully
-        "400":
-          description: Bad. albumId is invalid (not uuid)
-        "404":
-          description: Album was not found
-      tags: *a3
-  "/favs/artist/{id}":
-    post:
-      operationId: createArtistFav
-      summary: Add artist to the favorites
-      description: Add artist to the favorites
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "201":
-          description: Added successfully
-        "400":
-          description: Bad request. artistId is invalid (not uuid)
-        "422":
-          description: Artist with id doesn't exist
-      tags: *a3
-    delete:
-      operationId: removeArtistFav
-      summary: Delete artist from favorites
-      description: Delete artist from favorites
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "204":
-          description: Deleted successfully
-        "400":
-          description: Bad request. artistId is invalid (not uuid)
-        "404":
-          description: Artist was not found
-      tags: *a3
+      tags: *a4
+      security: *a5
   /artist:
     post:
       operationId: create
@@ -363,8 +325,10 @@ paths:
                 $ref: "#/components/schemas/Artist"
         "400":
           description: Bad request. body does not contain required fields
-      tags: &a4
+      tags: &a6
         - Artist
+      security: &a7
+        - bearer: []
     get:
       operationId: findAll
       summary: Get all artists
@@ -379,7 +343,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Artist"
-      tags: *a4
+      tags: *a6
+      security: *a7
   "/artist/{id}":
     get:
       operationId: findOne
@@ -402,7 +367,8 @@ paths:
           description: Bad request. artistId is invalid (not uuid)
         "404":
           description: Artist was not found
-      tags: *a4
+      tags: *a6
+      security: *a7
     put:
       operationId: update
       summary: Update artist information
@@ -430,7 +396,8 @@ paths:
           description: Bad request. artistId is invalid (not uuid)
         "404":
           description: Artist was not found
-      tags: *a4
+      tags: *a6
+      security: *a7
     delete:
       operationId: remove
       summary: Delete artist
@@ -448,7 +415,8 @@ paths:
           description: Bad request. artistId is invalid (not uuid)
         "404":
           description: Artist was not found
-      tags: *a4
+      tags: *a6
+      security: *a7
   /album:
     post:
       operationId: create
@@ -470,8 +438,10 @@ paths:
                 $ref: "#/components/schemas/Album"
         "400":
           description: Bad request. body does not contain required fields
-      tags: &a5
+      tags: &a8
         - Album
+      security: &a9
+        - bearer: []
     get:
       operationId: findAll
       summary: Get albums list
@@ -486,7 +456,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Album"
-      tags: *a5
+      tags: *a8
+      security: *a9
   "/album/{id}":
     get:
       operationId: findOne
@@ -509,7 +480,8 @@ paths:
           description: Bad request. albumId is invalid (not uuid)
         "404":
           description: Album was not found
-      tags: *a5
+      tags: *a8
+      security: *a9
     put:
       operationId: update
       summary: Update album information
@@ -537,7 +509,8 @@ paths:
           description: Bad request. albumId is invalid (not uuid)
         "404":
           description: Album was not found
-      tags: *a5
+      tags: *a8
+      security: *a9
     delete:
       operationId: remove
       summary: Delete album
@@ -555,7 +528,142 @@ paths:
           description: Bad request. albumId is invalid (not uuid)
         "404":
           description: Album was not found
-      tags: *a5
+      tags: *a8
+      security: *a9
+  /favs:
+    get:
+      operationId: findAll
+      summary: Get all favorites
+      description: Gets all favorites movies, tracks and books
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Favorites"
+      tags: &a10
+        - Favs
+      security: &a11
+        - bearer: []
+  "/favs/track/{id}":
+    post:
+      operationId: createTrackFav
+      summary: Add track to the favorites
+      description: Add track to the favorites
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Added successfully
+        "400":
+          description: Bad. trackId is invalid (not uuid)
+        "422":
+          description: Track with id doesn't exist
+      tags: *a10
+      security: *a11
+    delete:
+      operationId: removeTrackFav
+      summary: Delete track from favorites
+      description: Delete track from favorites
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted successfully
+        "400":
+          description: Bad. trackId is invalid (not uuid)
+        "404":
+          description: Track was not found
+      tags: *a10
+      security: *a11
+  "/favs/album/{id}":
+    post:
+      operationId: createAlbumFav
+      summary: Add album to the favorites
+      description: Add album to the favorites
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Added successfully
+        "400":
+          description: Bad. albumId is invalid (not uuid)
+        "422":
+          description: Album with id doesn't exist
+      tags: *a10
+      security: *a11
+    delete:
+      operationId: removeAlbumFav
+      summary: Delete album from favorites
+      description: Delete album from favorites
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted successfully
+        "400":
+          description: Bad. albumId is invalid (not uuid)
+        "404":
+          description: Album was not found
+      tags: *a10
+      security: *a11
+  "/favs/artist/{id}":
+    post:
+      operationId: createArtistFav
+      summary: Add artist to the favorites
+      description: Add artist to the favorites
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Added successfully
+        "400":
+          description: Bad request. artistId is invalid (not uuid)
+        "422":
+          description: Artist with id doesn't exist
+      tags: *a10
+      security: *a11
+    delete:
+      operationId: removeArtistFav
+      summary: Delete artist from favorites
+      description: Delete artist from favorites
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted successfully
+        "400":
+          description: Bad request. artistId is invalid (not uuid)
+        "404":
+          description: Artist was not found
+      tags: *a10
+      security: *a11
 info:
   title: Home Library Service
   description: Home music library service
@@ -565,7 +673,51 @@ tags: []
 servers:
   - url: /
 components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
   schemas:
+    SignupDto:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+      required:
+        - login
+        - password
+    LoginDto:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+      required:
+        - login
+        - password
+    Auth:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          format: JWT
+        refreshToken:
+          type: string
+          format: JWT
+      required:
+        - accessToken
+        - refreshToken
+    RefreshTokenDto:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - refreshToken
     CreateUserDto:
       type: object
       properties:
@@ -657,6 +809,16 @@ components:
         - artistId
         - albumId
         - duration
+    CreateArtistDto:
+      type: object
+      properties:
+        name:
+          type: string
+        grammy:
+          type: boolean
+      required:
+        - name
+        - grammy
     Artist:
       type: object
       properties:
@@ -674,6 +836,20 @@ components:
         - id
         - name
         - grammy
+    CreateAlbumDto:
+      type: object
+      properties:
+        name:
+          type: string
+        year:
+          type: number
+        artistId:
+          type: string
+          nullable: true
+      required:
+        - name
+        - year
+        - artistId
     Album:
       type: object
       properties:
@@ -714,27 +890,3 @@ components:
         - artists
         - albums
         - tracks
-    CreateArtistDto:
-      type: object
-      properties:
-        name:
-          type: string
-        grammy:
-          type: boolean
-      required:
-        - name
-        - grammy
-    CreateAlbumDto:
-      type: object
-      properties:
-        name:
-          type: string
-        year:
-          type: number
-        artistId:
-          type: string
-          nullable: true
-      required:
-        - name
-        - year
-        - artistId
