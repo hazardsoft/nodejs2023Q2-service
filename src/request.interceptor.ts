@@ -19,16 +19,17 @@ export class RequestInterceptor implements NestInterceptor {
     const response = ctx.getResponse<Response>();
 
     const now = Date.now();
-    const requestLog = `Request: url: ${request.url}(${
-      request.method
-    }), query params ${JSON.stringify(request.query)}, body: ${JSON.stringify(
-      request.body,
-    )}`;
+    const requestLog = `Request: 
+          - url: ${request.url}(${request.method}),
+          - query params ${JSON.stringify(request.query)}, 
+          - body: ${JSON.stringify(request.body)}`;
 
     return next.handle().pipe(
-      tap(() => {
+      tap((data) => {
         const duration = Date.now() - now;
-        const responseLog = `Response: status code ${response.statusCode}`;
+        const responseLog = `Response: 
+          - status code: ${response.statusCode}, 
+          - body: ${JSON.stringify(data)}`;
         this.logger.debug(
           `${duration}ms${EOL}\t${requestLog}${EOL}\t${responseLog}`,
           RequestInterceptor.name,
