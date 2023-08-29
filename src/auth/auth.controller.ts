@@ -13,6 +13,7 @@ import { AuthService } from './auth.service';
 import { SkipAuth } from './decorators';
 import { User } from 'src/user/entities/user.entity';
 import { RefreshTokenDto } from './dto/refresh.dto';
+import { ParseRefreshTokenPipe } from './auth.pipe';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -62,7 +63,9 @@ export class AuthController {
   @ApiForbiddenResponse({
     description: 'Authentication failed',
   })
-  async refresh(@Body() dto: RefreshTokenDto): Promise<Auth> {
+  async refresh(
+    @Body(ParseRefreshTokenPipe) dto: RefreshTokenDto,
+  ): Promise<Auth> {
     return this.authService.refresh(dto);
   }
 }

@@ -5,6 +5,7 @@ import {
   InvalidAccessTokenError,
   ExpiredTokenError,
   InvalidRefreshTokenError,
+  AbsentRefreshTokenError,
 } from './errors';
 import ExceptionFilter from 'src/common/base.exception.filter';
 
@@ -24,7 +25,10 @@ export class AuthExceptionFilter extends ExceptionFilter<AuthError> {
         host,
       );
     }
-    if (exception instanceof InvalidAccessTokenError) {
+    if (
+      exception instanceof InvalidAccessTokenError ||
+      exception instanceof AbsentRefreshTokenError
+    ) {
       return this.handleError(
         {
           statusCode: HttpStatus.UNAUTHORIZED,

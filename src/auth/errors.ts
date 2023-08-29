@@ -6,6 +6,12 @@ export class UnauthorizedError extends AuthError {
   }
 }
 
+export class AbsentRefreshTokenError extends AuthError {
+  constructor() {
+    super('Refresh token is missing');
+  }
+}
+
 export class InvalidRefreshTokenError extends AuthError {
   constructor() {
     super('Refresh token is invalid');
