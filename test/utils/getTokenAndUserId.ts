@@ -28,7 +28,13 @@ const getTokenAndUserId = async (request: typeof _request) => {
   }
 
   const token = `Bearer ${accessToken}`;
-  return { token, accessToken, refreshToken, mockUserId };
+  return {
+    token,
+    accessToken,
+    refreshToken,
+    mockUserId,
+    login: createUserDto.login,
+  };
 };
 
 export default getTokenAndUserId;

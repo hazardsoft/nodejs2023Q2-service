@@ -4,6 +4,7 @@ import {
   shouldAuthorizationBeTested,
   removeTokenUser,
   getTokenAndUserId,
+  generateRefreshToken,
 } from '../utils';
 import { CommonHeaders } from '../types';
 import { HttpStatus } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { validate } from 'uuid';
 
 type UserTokens = {
   userId: string;
+  login: string;
   accessToken: string;
   refreshToken: string;
 };
@@ -50,9 +52,9 @@ describe('Auth (e2e)', () => {
 
   beforeAll(async () => {
     if (shouldAuthorizationBeTested) {
-      const { accessToken, refreshToken, mockUserId, token } =
+      const { accessToken, refreshToken, mockUserId, login, token } =
         await getTokenAndUserId(request);
-      userTokens = { userId: mockUserId, accessToken, refreshToken };
+      userTokens = { userId: mockUserId, login, accessToken, refreshToken };
       headers.Authorization = token;
     }
   });
@@ -85,18 +87,30 @@ describe('Auth (e2e)', () => {
       expect(refreshTokenPayload.exp!).toBeGreaterThan(accessTokenPayload.exp!);
     });
 
-    it('should fail with 401 (invalid refresh token)', async () => {
+    it('should fail with 403 (invalid refresh token)', async () => {
       const invalidRefreshToken = Math.random().toString();
       const response = await request
         .post(authRoutes.refresh)
         .send({ refreshToken: invalidRefreshToken });
 
-      expect(response.statusCode).toBe(HttpStatus.UNAUTHORIZED);
+      expect(response.statusCode).toBe(HttpStatus.FORBIDDEN);
     });
 
     it('should fail with 400 (no refresh token)', async () => {
       const response = await request.post(authRoutes.refresh).send();
       expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST);
+    });
+
+    it('should fail with 403 (expired refresh token)', async () => {
+      const payload: TokenPayload = {
+        userId: userTokens.userId,
+        login: userTokens.login,
+      };
+      const refreshToken = generateRefreshToken(payload, { expiresIn: '0s' });
+      const response = await request
+        .post(authRoutes.refresh)
+        .send({ refreshToken });
+      expect(response.statusCode).toBe(HttpStatus.FORBIDDEN);
     });
   });
 });
