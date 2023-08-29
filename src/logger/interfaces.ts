@@ -3,7 +3,6 @@ import { LogLevel } from '@nestjs/common';
 export type LoggerConfig = {
   logLevels: LogLevel[];
   logTargets: LogTarget[];
-  logLimit: number;
 };
 
 export type LogTarget = 'file' | 'stdout';

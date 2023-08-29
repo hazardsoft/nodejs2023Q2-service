@@ -19,25 +19,6 @@ export class LoggingService implements LoggerService {
     this.config = this.readConfig();
     this.setTargets(this.config.logTargets);
     this.setLogLevels(this.config.logLevels);
-
-    process.addListener('uncaughtException', (error: Error, origin: string) => {
-      this.error(
-        `Uncaught exception: ${JSON.stringify(error)}, origin: ${origin}`,
-        LoggingService.name,
-      );
-      process.exit(1);
-    });
-    process.addListener(
-      'unhandledRejection',
-      (reason: Error | unknown, promise: Promise<unknown>) => {
-        this.error(
-          `Unhandled rejection, promise: ${JSON.stringify(
-            promise,
-          )}, reason: ${reason}`,
-          LoggingService.name,
-        );
-      },
-    );
   }
 
   private readConfig(): LoggerConfig {
@@ -49,12 +30,9 @@ export class LoggingService implements LoggerService {
       ',',
     ) as LogTarget[];
 
-    const limit = this.configService.get<number>('LOG_LIMIT');
-
     return {
       logLevels: levels ?? ['verbose'],
       logTargets: targets ?? ['stdout'],
-      logLimit: limit ?? 100,
     };
   }
 
@@ -112,7 +90,7 @@ export class LoggingService implements LoggerService {
     this.loggers = targets.map((t) => {
       switch (t) {
         case 'file':
-          return new FileLogger(this.config.logLimit);
+          return new FileLogger(this.configService);
         case 'stdout':
           return new StdOutLogger();
       }
