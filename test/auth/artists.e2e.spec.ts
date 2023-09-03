@@ -1,6 +1,6 @@
 import { request } from '../lib';
 import { artistsRoutes } from '../endpoints';
-import { StatusCodes } from 'http-status-codes';
+import { HttpStatus } from '@nestjs/common';
 
 const createArtistDto = {
   name: 'TEST_artist',
@@ -17,7 +17,7 @@ describe('artist (e2e)', () => {
       await request
         .get(artistsRoutes.getAll)
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -26,7 +26,7 @@ describe('artist (e2e)', () => {
       await request
         .get(artistsRoutes.getById(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -36,7 +36,7 @@ describe('artist (e2e)', () => {
         .post(artistsRoutes.create)
         .set(commonHeaders)
         .send(createArtistDto)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -49,7 +49,7 @@ describe('artist (e2e)', () => {
           name: createArtistDto.name,
           grammy: false,
         })
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -58,7 +58,7 @@ describe('artist (e2e)', () => {
       await request
         .delete(artistsRoutes.delete(randomUUID))
         .set(commonHeaders)
-        .expect(StatusCodes.UNAUTHORIZED);
+        .expect(HttpStatus.UNAUTHORIZED);
     });
   });
 });

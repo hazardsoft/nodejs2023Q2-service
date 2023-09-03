@@ -1,11 +1,12 @@
 import { authRoutes } from '../endpoints';
+import _request from '../lib/request';
 
 const createUserDto = {
   login: 'TEST_AUTH_LOGIN',
   password: 'Tu6!@#%&',
 };
 
-const getTokenAndUserId = async (request) => {
+const getTokenAndUserId = async (request: typeof _request) => {
   // create user
   const {
     body: { id: mockUserId },
@@ -16,7 +17,7 @@ const getTokenAndUserId = async (request) => {
 
   // get token
   const {
-    body: { accessToken },
+    body: { accessToken, refreshToken },
   } = await request
     .post(authRoutes.login)
     .set('Accept', 'application/json')
@@ -27,8 +28,13 @@ const getTokenAndUserId = async (request) => {
   }
 
   const token = `Bearer ${accessToken}`;
-
-  return { token, mockUserId };
+  return {
+    token,
+    accessToken,
+    refreshToken,
+    mockUserId,
+    login: createUserDto.login,
+  };
 };
 
 export default getTokenAndUserId;

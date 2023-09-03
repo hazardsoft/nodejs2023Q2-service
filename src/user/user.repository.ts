@@ -35,7 +35,7 @@ export default class UserRepository extends GenericRepository<
     return this.prisma.createUser(dto);
   }
 
-  async update(id: string, dto: UpdatePasswordDto): Promise<User | undefined> {
+  async update(id: string, dto: UpdatePasswordDto): Promise<User> {
     return this.prisma.updateUserPassword(id, dto);
   }
 

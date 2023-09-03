@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   HttpCode,
   UseFilters,
+  HttpStatus,
 } from '@nestjs/common';
 import { FavsService } from './favs.service';
 import { Favorites } from './entities/fav.entity';
@@ -21,7 +22,6 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { config } from 'src/config';
-import { StatusCodes } from 'http-status-codes';
 import { FavsExceptionFilter } from './filters/favs.exception.filter';
 
 type FavCreateResponse = {
@@ -66,7 +66,7 @@ export class FavsController {
     };
   }
 
-  @HttpCode(StatusCodes.NO_CONTENT)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/track/:id')
   @ApiOperation({
     summary: 'Delete track from favorites',
@@ -110,7 +110,7 @@ export class FavsController {
     };
   }
 
-  @HttpCode(StatusCodes.NO_CONTENT)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/album/:id')
   @ApiOperation({
     summary: 'Delete album from favorites',
@@ -154,7 +154,7 @@ export class FavsController {
     };
   }
 
-  @HttpCode(StatusCodes.NO_CONTENT)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/artist/:id')
   @ApiOperation({
     summary: 'Delete artist from favorites',

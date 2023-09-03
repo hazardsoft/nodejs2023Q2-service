@@ -1,28 +1,99 @@
 import { resolve } from 'node:path';
-import { WriteStream, createWriteStream } from 'node:fs';
+import { PathLike, WriteStream, createWriteStream, mkdirSync } from 'node:fs';
 import { LogWriter } from './interfaces';
 import { LogLevel } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { copyFile, truncate } from 'node:fs/promises';
+
+type FileLoggerConfig = {
+  limit: number;
+  logsFolder: string;
+  errorLogsFileName: string;
+  combinedLogsFileName: string;
+};
+
+type FileInfo = {
+  stream?: WriteStream;
+  filePath: string;
+};
 
 export class FileLogger implements LogWriter {
-  private streams: Record<Partial<LogLevel>, WriteStream>;
-  private limitInBytes: number;
+  private config: FileLoggerConfig;
+  private files: Record<LogLevel, FileInfo>;
+  private streams: Map<PathLike, WriteStream> = new Map();
+  private bytesWritten: Map<WriteStream, number> = new Map();
 
-  constructor(private readonly limitInKb: number) {
-    this.limitInBytes = limitInKb * 1024;
+  constructor(private readonly configService: ConfigService) {
+    this.config = this.readConfig();
+    this.files = this.createFileInfos();
+    this.createLogsFolder();
+  }
 
-    const allStream = this.createStream(this.getLogPath());
-    const errorStream = this.createStream(this.getLogPath('error'));
-    this.streams = {
-      log: allStream,
-      debug: allStream,
-      warn: allStream,
-      verbose: allStream,
-      error: errorStream,
+  private readConfig(): FileLoggerConfig {
+    return {
+      limit: (this.configService.get<number>('LOG_LIMIT') ?? 10) * 1024,
+      logsFolder: this.configService.get<string>('LOG_FOLDER') ?? 'logs',
+      errorLogsFileName:
+        this.configService.get<string>('LOG_ERROR_FILE') ?? 'error.log',
+      combinedLogsFileName:
+        this.configService.get<string>('LOG_COMBINED_FILE') ?? 'combined.log',
     };
   }
 
+  private createLogsFolder(): void {
+    const logsFolderPath = resolve(this.config.logsFolder);
+    mkdirSync(logsFolderPath, { recursive: true });
+  }
+
+  private createFileInfos(): Record<LogLevel, FileInfo> {
+    const combinedLogsFileInfo: FileInfo = {
+      filePath: resolve(
+        this.config.logsFolder,
+        this.config.combinedLogsFileName,
+      ),
+    };
+    const errorLogsFileInfo: FileInfo = {
+      filePath: resolve(this.config.logsFolder, this.config.errorLogsFileName),
+    };
+
+    return {
+      debug: combinedLogsFileInfo,
+      error: errorLogsFileInfo,
+      fatal: combinedLogsFileInfo,
+      log: combinedLogsFileInfo,
+      verbose: combinedLogsFileInfo,
+      warn: combinedLogsFileInfo,
+    };
+  }
+
+  private hasStream(level: LogLevel): boolean {
+    const fileInfo = this.files[level];
+    return !!fileInfo.stream;
+  }
+
+  private createStream(level: LogLevel): WriteStream {
+    const fileInfo = this.files[level];
+
+    if (!this.streams.has(fileInfo.filePath)) {
+      const stream = createWriteStream(fileInfo.filePath, {
+        flags: 'a',
+      });
+      this.streams.set(fileInfo.filePath, stream);
+      this.bytesWritten.set(stream, 0);
+    }
+    fileInfo.stream = this.streams.get(fileInfo.filePath)!;
+    return fileInfo.stream;
+  }
+
+  private getStream(level: LogLevel): WriteStream {
+    const fileInfo = this.files[level];
+    return fileInfo.stream!;
+  }
+
   async write(message: string, level: LogLevel): Promise<void> {
-    const stream: WriteStream = this.streams[level];
+    const stream: WriteStream = this.hasStream(level)
+      ? this.getStream(level)
+      : this.createStream(level);
     await this.write_internal(stream, message, level);
   }
 
@@ -31,19 +102,13 @@ export class FileLogger implements LogWriter {
     message: string,
     level: LogLevel,
   ): Promise<void> {
-    const isOk = stream.write(message, (error: Error | null | undefined) => {
-      if (error) {
-        console.error(
-          `error occured while writing logs:`,
-          JSON.stringify(error),
-        );
-      }
-      if (stream.bytesWritten >= this.limitInBytes) {
-        stream.end();
-        this.streams[level] = this.createStream(this.getLogPath(level));
+    const isWritten = stream.write(message, async () => {
+      const isRotateLogfile = this.checkIfToRotateLogFile(stream);
+      if (isRotateLogfile) {
+        await this.rotateLogFile(level);
       }
     });
-    if (!isOk) {
+    if (!isWritten) {
       return new Promise((resolve) => {
         stream.once('drain', resolve);
       }).then(() => {
@@ -52,16 +117,26 @@ export class FileLogger implements LogWriter {
     }
   }
 
-  private createStream(path: string): WriteStream {
-    const stream = createWriteStream(path, {
-      flags: 'a',
-    });
-    return stream;
+  private checkIfToRotateLogFile(stream: WriteStream): boolean {
+    const bytesWritten = this.bytesWritten.get(stream)!;
+    return stream.bytesWritten - bytesWritten >= this.config.limit;
   }
 
-  private getLogPath(level: LogLevel = 'debug'): string {
-    const date = new Date();
-    const dateStr = `${date.getFullYear()}-${date.getMonth()}-${date.getDay()}T${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}-${date.getMilliseconds()}`;
-    return resolve(`./logs/${dateStr}_${level}.log`);
+  private async rotateLogFile(level: LogLevel): Promise<void> {
+    const fileInfo = this.files[level];
+    const copyPath = `${fileInfo.filePath.slice(
+      0,
+      -4,
+    )}_${this.getFormattedDate()}.log`;
+    await copyFile(fileInfo.filePath, copyPath);
+    await truncate(fileInfo.filePath, 0);
+
+    const stream = fileInfo.stream!;
+    this.bytesWritten.set(stream, stream.bytesWritten);
+  }
+
+  private getFormattedDate(): string {
+    const now = new Date();
+    return `${now.getFullYear()}.${now.getMonth()}.${now.getDay()}T${now.getHours()}.${now.getMinutes()}.${now.getMilliseconds()}`;
   }
 }

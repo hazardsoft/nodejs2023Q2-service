@@ -13,16 +13,8 @@ services:
       - ${PORT}:${PORT}
     networks:
       - library
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - LOG_TARGET=${LOG_TARGET}
-      - LOG_LIMIT=${LOG_LIMIT}
-      - ACCESS_TOKEN_SECRET_KEY=${ACCESS_TOKEN_SECRET_KEY}
-      - REFRESH_TOKEN_SECRET_KEY=${REFRESH_TOKEN_SECRET_KEY}
-      - ACCESS_TOKEN_EXPIRES_IN=${ACCESS_TOKEN_EXPIRES_IN}
-      - REFRESH_TOKEN_EXPIRES_IN=${REFRESH_TOKEN_EXPIRES_IN}
-      - CRYPT_SALT=${CRYPT_SALT}
+    env_file:
+      - .env.docker
     restart: always
   database-service:
     build:

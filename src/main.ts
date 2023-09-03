@@ -18,7 +18,6 @@ async function bootstrap() {
     .setTitle('Home Library Service')
     .setDescription('Home music library service')
     .setVersion('1.0.0')
-    .addServer('/')
     .addBearerAuth()
     .build();
 
@@ -39,14 +38,33 @@ async function bootstrap() {
     }),
   );
 
-  app.useLogger(app.get(LoggingService));
+  const logger = app.get(LoggingService);
+  app.useLogger(logger);
   app.useGlobalInterceptors(app.get(RequestInterceptor));
 
   const port = configService.get<number>('PORT') || 4000;
   await app.listen(port);
 
+  process.on('uncaughtException', (error: Error, origin: string) => {
+    logger.error(
+      `Uncaught exception: ${JSON.stringify(error)}, origin: ${origin}`,
+      LoggingService.name,
+    );
+    process.exit(1);
+  });
+  process.on(
+    'unhandledRejection',
+    (reason: Error | unknown, promise: Promise<unknown>) => {
+      logger.error(
+        `Unhandled rejection, promise: ${JSON.stringify(
+          promise,
+        )}, reason: ${reason}`,
+        LoggingService.name,
+      );
+    },
+  );
   process.on('exit', () => {
-    console.warn('application exited!');
+    logger.warn('application exited!');
   });
 }
 bootstrap();

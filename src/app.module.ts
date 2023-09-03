@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
 import { UserModule } from './user/user.module';
 import { AlbumModule } from './album/album.module';
 import { TrackModule } from './track/track.module';
@@ -51,6 +50,5 @@ import GlobalExeptionFilter from './global.exception.filter';
     },
     CryptoService,
   ],
-  controllers: [AppController],
 })
 export class AppModule {}

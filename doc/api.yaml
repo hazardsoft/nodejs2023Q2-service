@@ -1,14 +1,5 @@
 openapi: 3.0.0
 paths:
-  /throw:
-    post:
-      operationId: stopApplication
-      parameters: []
-      responses:
-        "201":
-          description: ""
-      tags:
-        - Utils
   /auth/signup:
     post:
       operationId: signup
@@ -79,8 +70,8 @@ paths:
   /user:
     post:
       operationId: create
-      summary: Create user
-      description: Creates a new user
+      summary: Add new User
+      description: Adds new User
       parameters: []
       requestBody:
         required: true
@@ -90,21 +81,21 @@ paths:
               $ref: "#/components/schemas/CreateUserDto"
       responses:
         "201":
-          description: The user has been created
+          description: User is created
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
         "400":
-          description: Bad request. body does not contain required fields
+          description: "Bad request: body does not contain required fields"
       tags: &a2
         - User
       security: &a3
         - bearer: []
     get:
       operationId: findAll
-      summary: Get all users
-      description: Gets all users
+      summary: Get list of Users
+      description: Gets list of Users
       parameters: []
       responses:
         "200":
@@ -120,8 +111,8 @@ paths:
   "/user/{id}":
     get:
       operationId: findOne
-      summary: Get single user by id
-      description: Get single user by id
+      summary: Get single User by id
+      description: Gets single User by id
       parameters:
         - name: id
           required: true
@@ -136,15 +127,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
         "400":
-          description: Bad request. userId is invalid (not uuid)
+          description: "Bad request: id is invalid (not uuid)"
         "404":
-          description: User not found
+          description: User was not found
       tags: *a2
       security: *a3
     put:
       operationId: update
-      summary: Update a user's password
-      description: Updates a user's password by ID
+      summary: Update User's information
+      description: Updates User's information by UUID
       parameters:
         - name: id
           required: true
@@ -165,17 +156,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
         "400":
-          description: Bad request. userId is invalid (not uuid)
-        "403":
-          description: oldPassword is wrong
+          description: "Bad request: id is invalid (not uuid)"
         "404":
-          description: User not found
+          description: User was not found
       tags: *a2
       security: *a3
     delete:
       operationId: remove
-      summary: Delete user
-      description: Deletes user by ID
+      summary: Delete User
+      description: Deletes User
       parameters:
         - name: id
           required: true
@@ -184,18 +173,18 @@ paths:
             type: string
       responses:
         "204":
-          description: The user has been deleted
+          description: User deleted successfully
         "400":
-          description: Bad request. userId is invalid (not uuid)
+          description: "Bad request: id is invalid (not uuid)"
         "404":
-          description: User not found
+          description: User was not found
       tags: *a2
       security: *a3
   /track:
     post:
       operationId: create
-      summary: Add new track
-      description: Add new track information
+      summary: Add new Track
+      description: Adds new Track
       parameters: []
       requestBody:
         required: true
@@ -205,21 +194,21 @@ paths:
               $ref: "#/components/schemas/CreateTrackDto"
       responses:
         "201":
-          description: Successful operation
+          description: Track is created
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Track"
         "400":
-          description: Bad request. body does not contain required fields
+          description: "Bad request: body does not contain required fields"
       tags: &a4
         - Track
       security: &a5
         - bearer: []
     get:
       operationId: findAll
-      summary: Get tracks list
-      description: Gets all library tracks list
+      summary: Get list of Tracks
+      description: Gets list of Tracks
       parameters: []
       responses:
         "200":
@@ -235,8 +224,8 @@ paths:
   "/track/{id}":
     get:
       operationId: findOne
-      summary: Get single track by id
-      description: Gets single track by id
+      summary: Get single Track by id
+      description: Gets single Track by id
       parameters:
         - name: id
           required: true
@@ -251,15 +240,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Track"
         "400":
-          description: Bad request. trackId is invalid (not uuid)
+          description: "Bad request: id is invalid (not uuid)"
         "404":
           description: Track was not found
       tags: *a4
       security: *a5
     put:
       operationId: update
-      summary: Update track information
-      description: Update library track information by UUID
+      summary: Update Track's information
+      description: Updates Track's information by UUID
       parameters:
         - name: id
           required: true
@@ -280,15 +269,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Track"
         "400":
-          description: Bad request. trackId is invalid (not uuid)
+          description: "Bad request: id is invalid (not uuid)"
         "404":
           description: Track was not found
       tags: *a4
       security: *a5
     delete:
       operationId: remove
-      summary: Delete track
-      description: Delete track from library
+      summary: Delete Track
+      description: Deletes Track
       parameters:
         - name: id
           required: true
@@ -297,9 +286,9 @@ paths:
             type: string
       responses:
         "204":
-          description: Deleted successfully
+          description: Track deleted successfully
         "400":
-          description: Bad request. trackId is invalid (not uuid)
+          description: "Bad request: id is invalid (not uuid)"
         "404":
           description: Track was not found
       tags: *a4
@@ -307,8 +296,8 @@ paths:
   /artist:
     post:
       operationId: create
-      summary: Add new artist
-      description: Add new artist
+      summary: Add new Artist
+      description: Adds new Artist
       parameters: []
       requestBody:
         required: true
@@ -318,21 +307,21 @@ paths:
               $ref: "#/components/schemas/CreateArtistDto"
       responses:
         "201":
-          description: Successful operation
+          description: Artist is created
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Artist"
         "400":
-          description: Bad request. body does not contain required fields
+          description: "Bad request: body does not contain required fields"
       tags: &a6
         - Artist
       security: &a7
         - bearer: []
     get:
       operationId: findAll
-      summary: Get all artists
-      description: Gets all artists
+      summary: Get list of Artists
+      description: Gets list of Artists
       parameters: []
       responses:
         "200":
@@ -348,8 +337,8 @@ paths:
   "/artist/{id}":
     get:
       operationId: findOne
-      summary: Get single artist by id
-      description: Get single artist by id
+      summary: Get single Artist by id
+      description: Gets single Artist by id
       parameters:
         - name: id
           required: true
@@ -364,15 +353,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Artist"
         "400":
-          description: Bad request. artistId is invalid (not uuid)
+          description: "Bad request: id is invalid (not uuid)"
         "404":
           description: Artist was not found
       tags: *a6
       security: *a7
     put:
       operationId: update
-      summary: Update artist information
-      description: Update artist information by UUID
+      summary: Update Artist's information
+      description: Updates Artist's information by UUID
       parameters:
         - name: id
           required: true
@@ -393,15 +382,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Artist"
         "400":
-          description: Bad request. artistId is invalid (not uuid)
+          description: "Bad request: id is invalid (not uuid)"
         "404":
           description: Artist was not found
       tags: *a6
       security: *a7
     delete:
       operationId: remove
-      summary: Delete artist
-      description: Delete artist from library
+      summary: Delete Artist
+      description: Deletes Artist
       parameters:
         - name: id
           required: true
@@ -410,9 +399,9 @@ paths:
             type: string
       responses:
         "204":
-          description: ""
+          description: Artist deleted successfully
         "400":
-          description: Bad request. artistId is invalid (not uuid)
+          description: "Bad request: id is invalid (not uuid)"
         "404":
           description: Artist was not found
       tags: *a6
@@ -420,8 +409,8 @@ paths:
   /album:
     post:
       operationId: create
-      summary: Add new album
-      description: Add new album information
+      summary: Add new Album
+      description: Adds new Album
       parameters: []
       requestBody:
         required: true
@@ -437,15 +426,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Album"
         "400":
-          description: Bad request. body does not contain required fields
+          description: "Bad request: body does not contain required fields"
       tags: &a8
         - Album
       security: &a9
         - bearer: []
     get:
       operationId: findAll
-      summary: Get albums list
-      description: Gets all library albums list
+      summary: Get list of Albums
+      description: Gets list of Albums
       parameters: []
       responses:
         "200":
@@ -461,8 +450,8 @@ paths:
   "/album/{id}":
     get:
       operationId: findOne
-      summary: Get single album by id
-      description: Gets single album by id
+      summary: Get single Album by id
+      description: Gets single Album by id
       parameters:
         - name: id
           required: true
@@ -477,15 +466,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Album"
         "400":
-          description: Bad request. albumId is invalid (not uuid)
+          description: "Bad request: id is invalid (not uuid)"
         "404":
           description: Album was not found
       tags: *a8
       security: *a9
     put:
       operationId: update
-      summary: Update album information
-      description: Update library album information by UUID
+      summary: Update Album's information
+      description: Updates Album's information by UUID
       parameters:
         - name: id
           required: true
@@ -506,15 +495,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Album"
         "400":
-          description: Bad request. albumId is invalid (not uuid)
+          description: "Bad request: id is invalid (not uuid)"
         "404":
           description: Album was not found
       tags: *a8
       security: *a9
     delete:
       operationId: remove
-      summary: Delete album
-      description: Delete album from library
+      summary: Delete Album
+      description: Deletes Album
       parameters:
         - name: id
           required: true
@@ -523,9 +512,9 @@ paths:
             type: string
       responses:
         "204":
-          description: Deleted successfully
+          description: Album deleted successfully
         "400":
-          description: Bad request. albumId is invalid (not uuid)
+          description: "Bad request: id is invalid (not uuid)"
         "404":
           description: Album was not found
       tags: *a8
@@ -670,8 +659,7 @@ info:
   version: 1.0.0
   contact: {}
 tags: []
-servers:
-  - url: /
+servers: []
 components:
   securitySchemes:
     bearer:

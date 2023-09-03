@@ -30,17 +30,17 @@ export class CryptoService {
   private readConfig(): CryptoConfig {
     return {
       saltRounds: Number(this.configService.get<number>('CRYPT_SALT')),
-      accessTokenSecurityKey: this.configService.get<string>(
-        'ACCESS_TOKEN_SECRET_KEY',
+      accessTokenSecurityKey: String(
+        this.configService.get<string>('ACCESS_TOKEN_SECRET_KEY'),
       ),
-      accessTokenExpiresIn: this.configService.get<string>(
-        'ACCESS_TOKEN_EXPIRES_IN',
+      accessTokenExpiresIn: String(
+        this.configService.get<string>('ACCESS_TOKEN_EXPIRES_IN'),
       ),
-      refreshTokenSecurityKey: this.configService.get<string>(
-        'REFRESH_TOKEN_SECRET_KEY',
+      refreshTokenSecurityKey: String(
+        this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
       ),
-      refreshTokenExpiresIn: this.configService.get<string>(
-        'REFRESH_TOKEN_EXPIRES_IN',
+      refreshTokenExpiresIn: String(
+        this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
       ),
     };
   }

@@ -3,11 +3,16 @@ import { LoginDto } from './dto/login.dto';
 import { Auth } from './entity/auth.entity';
 import { UserService } from 'src/user/user.service';
 import { SignupDto } from './dto/signup.dto';
-import { InvalidTokenError, UnauthorizedError } from './errors';
+import {
+  ExpiredTokenError,
+  InvalidRefreshTokenError,
+  UnauthorizedError,
+} from './errors';
 import { User } from 'src/user/entities/user.entity';
 import { RefreshTokenDto } from './dto/refresh.dto';
 import { plainToInstance } from 'class-transformer';
 import { CryptoService } from 'src/crypto/crypto.service';
+import { TokenExpiredError } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
@@ -30,9 +35,8 @@ export class AuthService {
     }
     const user = await this.userService.findOneByLogin(dto.login);
     const payload = { userId: user.id, login: user.login };
-    const [accessToken, refreshToken] = await this.cryptoService.generateTokens(
-      payload,
-    );
+    const [accessToken, refreshToken] =
+      await this.cryptoService.generateTokens(payload);
 
     return plainToInstance(Auth, {
       accessToken,
@@ -52,7 +56,10 @@ export class AuthService {
         refreshToken,
       });
     } catch (e) {
-      throw new InvalidTokenError();
+      if (e instanceof TokenExpiredError) {
+        throw new ExpiredTokenError();
+      }
+      throw new InvalidRefreshTokenError();
     }
   }
 }

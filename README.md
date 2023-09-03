@@ -22,9 +22,8 @@ git checkout auth
 
 1. [Install dependencies](./README.md#installing-dependencies)
 2. [Create .env config](./README.md#creating-env-config)
-3. [Create logs folder](./README.md#creating-logs-folder)
-4. [Run application with Docker](./README.md#running-application-with-docker)
-5. [Run application w/o Docker (optionally)](./README.md#running-application-wo-docker-optional)
+3. [Run application with Docker](./README.md#running-application-with-docker)
+4. [Run application w/o Docker (optionally)](./README.md#running-application-wo-docker-optional)
 
 ### Installing Dependencies
 
@@ -37,10 +36,6 @@ npm install
 Create 2 config files out of `.env.example` via copy/paste:
 1. `.env` file to be used to local development (set `POSTGRES_HOST` variable to `localhost`);
 2. `.env.docker` to be used by Docker (make sure that `POSTGRES_HOST` is set to `database-service`).
-
-### Creating logs Folder
-
-Create `logs` folder in the project root. All created logs will appear in this folder.
 
 ### Running Application with Docker
 
@@ -90,13 +85,12 @@ docker compose -f docker-compose-prod.yml down
 Normally application should be run with Docker Compose (refer to [Running Application with Docker](./README.md#running-application-with-docker)).
 
 If you still need to run application/tests w/o Docker (e.g. for better debug experience), the following steps should be done:
-1. create folder `logs` (log files will be created in that folder)
-2. run `docker compose --env-file .env.docker up database-service --build --detach` command - runs PostgreSQL service only
-3. run `npx prisma migrate deploy` - applies prisma migrations to the database started in p.1
-4. run `npx prisma generate` - generates Prisma Client
-5. run `npx prisma db seed` - seeds database started in p.1
-6. run `npm run start:dev` 
-7. run `npm run test:auth`
+1. run `docker compose --env-file .env.docker up database-service --build --detach` command - runs PostgreSQL service only
+2. run `npx prisma migrate deploy` - applies prisma migrations to the database started in p.1
+3. run `npx prisma generate` - generates Prisma Client
+4. run `npx prisma db seed` - seeds database started in p.1
+5. run `npm run start:dev` 
+6. run `npm run test:auth`
 
 ## Verifications
 
@@ -125,16 +119,15 @@ Tests can be run either on host or in a container:
 
 ### Application Logs
 
-N.B. Please create `logs` folder as described in [Creating logs folder](./README.md#creating-logs-folder) section first.
-
 By default 2 logs files are created:
-1. `./logs/{date}_debug.log` - contains logs with all levels (except of `error`);
-2. `./logs/{date}_error.log` - contains logs with `error` log level only.
+1. `./logs/combined.log` - contains logs with all levels (except of `error`);
+2. `./logs/error.log` - contains logs with `error` log level only.
 
 `.env.example` has several settings responsible for configuring logs:
 1. `LOG_LEVEL` defines log levels (log levels naming and values fully correspond Nest ones); can be array of log levels (e.g. `LOG_LEVEL=log,error`) or contain one log level only (e.g. `LOG_LEVEL=debug`);
 2. `LOG_TARGET` defines list of targets to write logs to; can be array of targets (e.g. `LOG_TARGET=stdout,file`) or contain one target only (e.g. `LOG_TARGET=file`);
-3. `LOG_LIMIT` defines max log file size in kilobytes (e.g. `LOG_LIMIT=20`): once file size limit is reached current log file is closed and a new one is created.
+3. `LOG_LIMIT` defines max log file size in kilobytes (e.g. `LOG_LIMIT=20`): once file size limit is reached current log file is closed and a new one is created;
+4. `LOG_FOLDER` defines folder where all logs will be created.
 
 If application is run in [Development Mode](./README.md#development-mode) docker volume `rest-logs` is created and stores all log files created by the application.
 

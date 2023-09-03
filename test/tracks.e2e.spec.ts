@@ -1,5 +1,4 @@
 import { validate } from 'uuid';
-import { StatusCodes } from 'http-status-codes';
 import { request } from './lib';
 import {
   getTokenAndUserId,
@@ -7,6 +6,8 @@ import {
   removeTokenUser,
 } from './utils';
 import { tracksRoutes } from './endpoints';
+import { HttpStatus } from '@nestjs/common';
+import { CommonHeaders } from './types';
 
 const createTrackDto = {
   name: 'TEST_TRACK',
@@ -20,13 +21,13 @@ const randomUUID = '0a35dd62-e09f-444b-a628-f4e7c6954f57';
 
 describe('Tracks (e2e)', () => {
   const unauthorizedRequest = request;
-  const commonHeaders = { Accept: 'application/json' };
+  const commonHeaders: Partial<CommonHeaders> = { Accept: 'application/json' };
   let mockUserId: string | undefined;
 
   beforeAll(async () => {
     if (shouldAuthorizationBeTested) {
       const result = await getTokenAndUserId(unauthorizedRequest);
-      commonHeaders['Authorization'] = result.token;
+      commonHeaders.Authorization = result.token;
       mockUserId = result.mockUserId;
     }
   });
@@ -37,8 +38,8 @@ describe('Tracks (e2e)', () => {
       await removeTokenUser(unauthorizedRequest, mockUserId, commonHeaders);
     }
 
-    if (commonHeaders['Authorization']) {
-      delete commonHeaders['Authorization'];
+    if (commonHeaders.Authorization) {
+      delete commonHeaders.Authorization;
     }
   });
 
@@ -48,7 +49,7 @@ describe('Tracks (e2e)', () => {
         .get(tracksRoutes.getAll)
         .set(commonHeaders);
 
-      expect(response.status).toBe(StatusCodes.OK);
+      expect(response.status).toBe(HttpStatus.OK);
       expect(response.body).toBeInstanceOf(Array);
     });
 
@@ -60,20 +61,20 @@ describe('Tracks (e2e)', () => {
 
       const { id } = creationResponse.body;
 
-      expect(creationResponse.statusCode).toBe(StatusCodes.CREATED);
+      expect(creationResponse.statusCode).toBe(HttpStatus.CREATED);
 
       const searchResponse = await unauthorizedRequest
         .get(tracksRoutes.getById(id))
         .set(commonHeaders);
 
-      expect(searchResponse.statusCode).toBe(StatusCodes.OK);
+      expect(searchResponse.statusCode).toBe(HttpStatus.OK);
       expect(searchResponse.body).toBeInstanceOf(Object);
 
       const cleanupResponse = await unauthorizedRequest
         .delete(tracksRoutes.delete(id))
         .set(commonHeaders);
 
-      expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
+      expect(cleanupResponse.statusCode).toBe(HttpStatus.NO_CONTENT);
     });
 
     it('should respond with BAD_REQUEST status code in case of invalid id', async () => {
@@ -81,7 +82,7 @@ describe('Tracks (e2e)', () => {
         .get(tracksRoutes.getById('some-invalid-id'))
         .set(commonHeaders);
 
-      expect(response.status).toBe(StatusCodes.BAD_REQUEST);
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
     });
 
     it("should respond with NOT_FOUND status code in case if track doesn't exist", async () => {
@@ -89,7 +90,7 @@ describe('Tracks (e2e)', () => {
         .get(tracksRoutes.getById(randomUUID))
         .set(commonHeaders);
 
-      expect(response.status).toBe(StatusCodes.NOT_FOUND);
+      expect(response.status).toBe(HttpStatus.NOT_FOUND);
     });
   });
 
@@ -100,7 +101,7 @@ describe('Tracks (e2e)', () => {
         .set(commonHeaders)
         .send(createTrackDto);
 
-      expect(response.status).toBe(StatusCodes.CREATED);
+      expect(response.status).toBe(HttpStatus.CREATED);
 
       const { id, name, duration, artistId, albumId } = response.body;
       expect(validate(id)).toBe(true);
@@ -113,7 +114,7 @@ describe('Tracks (e2e)', () => {
         .delete(tracksRoutes.delete(id))
         .set(commonHeaders);
 
-      expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
+      expect(cleanupResponse.statusCode).toBe(HttpStatus.NO_CONTENT);
     });
 
     it('should respond with BAD_REQUEST in case of invalid required data', async () => {
@@ -136,7 +137,7 @@ describe('Tracks (e2e)', () => {
 
       expect(
         responses.every(
-          ({ statusCode }) => statusCode === StatusCodes.BAD_REQUEST,
+          ({ statusCode }) => statusCode === HttpStatus.BAD_REQUEST,
         ),
       ).toBe(true);
     });
@@ -151,7 +152,7 @@ describe('Tracks (e2e)', () => {
 
       const { id: createdId } = creationResponse.body;
 
-      expect(creationResponse.status).toBe(StatusCodes.CREATED);
+      expect(creationResponse.status).toBe(HttpStatus.CREATED);
 
       const updateResponse = await unauthorizedRequest
         .put(tracksRoutes.update(createdId))
@@ -163,7 +164,7 @@ describe('Tracks (e2e)', () => {
           albumId: createTrackDto.albumId,
         });
 
-      expect(updateResponse.statusCode).toBe(StatusCodes.OK);
+      expect(updateResponse.statusCode).toBe(HttpStatus.OK);
 
       const {
         id: updatedId,
@@ -184,7 +185,7 @@ describe('Tracks (e2e)', () => {
         .delete(tracksRoutes.delete(createdId))
         .set(commonHeaders);
 
-      expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
+      expect(cleanupResponse.statusCode).toBe(HttpStatus.NO_CONTENT);
     });
 
     it('should respond with BAD_REQUEST status code in case of invalid id', async () => {
@@ -198,7 +199,7 @@ describe('Tracks (e2e)', () => {
           albumId: createTrackDto.albumId,
         });
 
-      expect(response.status).toBe(StatusCodes.BAD_REQUEST);
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
     });
 
     it('should respond with BAD_REQUEST status code in case of invalid dto', async () => {
@@ -209,7 +210,7 @@ describe('Tracks (e2e)', () => {
 
       const { id: createdId } = creationResponse.body;
 
-      expect(creationResponse.status).toBe(StatusCodes.CREATED);
+      expect(creationResponse.status).toBe(HttpStatus.CREATED);
 
       const response = await unauthorizedRequest
         .put(tracksRoutes.update(createdId))
@@ -221,7 +222,7 @@ describe('Tracks (e2e)', () => {
           albumId: 123,
         });
 
-      expect(response.status).toBe(StatusCodes.BAD_REQUEST);
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
     });
 
     it("should respond with NOT_FOUND status code in case if track doesn't exist", async () => {
@@ -235,7 +236,7 @@ describe('Tracks (e2e)', () => {
           albumId: createTrackDto.albumId,
         });
 
-      expect(response.status).toBe(StatusCodes.NOT_FOUND);
+      expect(response.status).toBe(HttpStatus.NOT_FOUND);
     });
   });
 
@@ -248,19 +249,19 @@ describe('Tracks (e2e)', () => {
 
       const { id } = response.body;
 
-      expect(response.status).toBe(StatusCodes.CREATED);
+      expect(response.status).toBe(HttpStatus.CREATED);
 
       const cleanupResponse = await unauthorizedRequest
         .delete(tracksRoutes.delete(id))
         .set(commonHeaders);
 
-      expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
+      expect(cleanupResponse.statusCode).toBe(HttpStatus.NO_CONTENT);
 
       const searchResponse = await unauthorizedRequest
         .get(tracksRoutes.getById(id))
         .set(commonHeaders);
 
-      expect(searchResponse.statusCode).toBe(StatusCodes.NOT_FOUND);
+      expect(searchResponse.statusCode).toBe(HttpStatus.NOT_FOUND);
     });
 
     it('should respond with BAD_REQUEST status code in case of invalid id', async () => {
@@ -268,7 +269,7 @@ describe('Tracks (e2e)', () => {
         .delete(tracksRoutes.delete('some-invalid-id'))
         .set(commonHeaders);
 
-      expect(response.status).toBe(StatusCodes.BAD_REQUEST);
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
     });
 
     it("should respond with NOT_FOUND status code in case if track doesn't exist", async () => {
@@ -276,7 +277,7 @@ describe('Tracks (e2e)', () => {
         .delete(tracksRoutes.delete(randomUUID))
         .set(commonHeaders);
 
-      expect(response.status).toBe(StatusCodes.NOT_FOUND);
+      expect(response.status).toBe(HttpStatus.NOT_FOUND);
     });
   });
 });
