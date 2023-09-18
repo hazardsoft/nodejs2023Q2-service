@@ -1,6 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
-import { InvalidAccessTokenError } from './errors';
 import { Reflector } from '@nestjs/core';
 import { SKIP_AUTH_META } from './decorators';
 import { CryptoService } from 'src/crypto/crypto.service';
@@ -23,20 +22,12 @@ export class AuthGuard implements CanActivate {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest<Request>();
     const token = this.extractToken(request);
-    if (!token) {
-      throw new InvalidAccessTokenError();
-    }
-    try {
-      await this.cryptoService.verifyAccessToken(token);
-    } catch (e) {
-      throw new InvalidAccessTokenError();
-    }
-
+    await this.cryptoService.verifyAccessToken(token);
     return true;
   }
 
-  private extractToken(request: Request): string | undefined {
+  private extractToken(request: Request): string {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    return type === 'Bearer' ? token : '';
   }
 }

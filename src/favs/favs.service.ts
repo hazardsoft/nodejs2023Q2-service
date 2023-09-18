@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Favorites } from './entities/fav.entity';
 import { plainToInstance } from 'class-transformer';
-import { FavoritesCreateError, FavoritesDeleteError } from './errors';
 import FavoritesRepository from './favs.repository';
 import { TrackService } from 'src/track/track.service';
 import { AlbumService } from 'src/album/album.service';
@@ -29,50 +28,26 @@ export class FavsService {
   }
 
   async createTrack(id: string): Promise<void> {
-    try {
-      await this.repository.createTrack(id);
-    } catch (e) {
-      throw new FavoritesCreateError();
-    }
+    await this.repository.createTrack(id);
   }
 
   async createAlbum(id: string): Promise<void> {
-    try {
-      await this.repository.createAlbum(id);
-    } catch (e) {
-      throw new FavoritesCreateError();
-    }
+    await this.repository.createAlbum(id);
   }
 
   async createArtist(id: string): Promise<void> {
-    try {
-      await this.repository.createArtist(id);
-    } catch (e) {
-      throw new FavoritesCreateError();
-    }
+    await this.repository.createArtist(id);
   }
 
   async removeTrack(id: string): Promise<void> {
-    try {
-      await this.repository.deleteTrack(id);
-    } catch (e) {
-      throw new FavoritesDeleteError();
-    }
+    await this.repository.deleteTrack(id);
   }
 
   async removeAlbum(id: string): Promise<void> {
-    try {
-      await this.repository.deleteAlbum(id);
-    } catch (e) {
-      throw new FavoritesDeleteError();
-    }
+    await this.repository.deleteAlbum(id);
   }
 
   async removeArtist(id: string): Promise<void> {
-    try {
-      await this.repository.deleteArtist(id);
-    } catch (e) {
-      throw new FavoritesDeleteError();
-    }
+    await this.repository.deleteArtist(id);
   }
 }

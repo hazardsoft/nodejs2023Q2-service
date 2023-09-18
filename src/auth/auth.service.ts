@@ -3,16 +3,11 @@ import { LoginDto } from './dto/login.dto';
 import { Auth } from './entity/auth.entity';
 import { UserService } from 'src/user/user.service';
 import { SignupDto } from './dto/signup.dto';
-import {
-  ExpiredTokenError,
-  InvalidRefreshTokenError,
-  UnauthorizedError,
-} from './errors';
+import { UnauthorizedError } from './errors';
 import { User } from 'src/user/entities/user.entity';
 import { RefreshTokenDto } from './dto/refresh.dto';
 import { plainToInstance } from 'class-transformer';
 import { CryptoService } from 'src/crypto/crypto.service';
-import { TokenExpiredError } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
@@ -45,21 +40,14 @@ export class AuthService {
   }
 
   async refresh(dto: RefreshTokenDto): Promise<Auth> {
-    try {
-      const payload = await this.cryptoService.verifyRefreshToken(
-        dto.refreshToken,
-      );
-      const [accessToken, refreshToken] =
-        await this.cryptoService.generateTokens(payload);
-      return plainToInstance(Auth, {
-        accessToken,
-        refreshToken,
-      });
-    } catch (e) {
-      if (e instanceof TokenExpiredError) {
-        throw new ExpiredTokenError();
-      }
-      throw new InvalidRefreshTokenError();
-    }
+    const payload = await this.cryptoService.verifyRefreshToken(
+      dto.refreshToken,
+    );
+    const [accessToken, refreshToken] =
+      await this.cryptoService.generateTokens(payload);
+    return plainToInstance(Auth, {
+      accessToken,
+      refreshToken,
+    });
   }
 }
