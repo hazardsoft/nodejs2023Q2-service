@@ -165,63 +165,51 @@ export class PrismaService implements OnModuleInit {
   }
 
   async createFavoriteTrack(trackId: string): Promise<string> {
-    try {
-      await this.prisma.favorite.update({
-        where: {
-          id: favoritesEntityId,
-        },
-        data: {
-          tracks: {
-            create: {
-              trackId,
-            },
+    await this.prisma.favorite.update({
+      where: {
+        id: favoritesEntityId,
+      },
+      data: {
+        tracks: {
+          create: {
+            trackId,
           },
         },
-      });
-      return trackId;
-    } catch (e) {
-      throw e;
-    }
+      },
+    });
+    return trackId;
   }
 
   async createFavoriteAlbum(albumId: string): Promise<string> {
-    try {
-      await this.prisma.favorite.update({
-        where: {
-          id: favoritesEntityId,
-        },
-        data: {
-          albums: {
-            create: {
-              albumId,
-            },
+    await this.prisma.favorite.update({
+      where: {
+        id: favoritesEntityId,
+      },
+      data: {
+        albums: {
+          create: {
+            albumId,
           },
         },
-      });
-      return albumId;
-    } catch (e) {
-      throw e;
-    }
+      },
+    });
+    return albumId;
   }
 
   async createFavoriteArtist(artistId: string): Promise<string> {
-    try {
-      await this.prisma.favorite.update({
-        where: {
-          id: favoritesEntityId,
-        },
-        data: {
-          artists: {
-            create: {
-              artistId,
-            },
+    await this.prisma.favorite.update({
+      where: {
+        id: favoritesEntityId,
+      },
+      data: {
+        artists: {
+          create: {
+            artistId,
           },
         },
-      });
-      return artistId;
-    } catch (e) {
-      throw e;
-    }
+      },
+    });
+    return artistId;
   }
 
   async updateUserPassword(

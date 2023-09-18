@@ -2,6 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { TokenExpiredError } from 'jsonwebtoken';
+import {
+  ExpiredAccessTokenError,
+  ExpiredRefreshTokenError,
+  InvalidAccessTokenError,
+  InvalidRefreshTokenError,
+} from './errors';
 
 type CryptoConfig = {
   saltRounds: number;
@@ -78,18 +85,32 @@ export class CryptoService {
   }
 
   async verifyAccessToken(token: string): Promise<JwtTokenPayload> {
-    const { userId, login } =
-      await this.jwtService.verifyAsync<JwtTokenPayload>(token, {
-        secret: this.config.accessTokenSecurityKey,
-      });
-    return { userId, login };
+    try {
+      const { userId, login } =
+        await this.jwtService.verifyAsync<JwtTokenPayload>(token, {
+          secret: this.config.accessTokenSecurityKey,
+        });
+      return { userId, login };
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        throw new ExpiredAccessTokenError();
+      }
+      throw new InvalidAccessTokenError();
+    }
   }
 
   async verifyRefreshToken(token: string): Promise<JwtTokenPayload> {
-    const { userId, login } =
-      await this.jwtService.verifyAsync<JwtTokenPayload>(token, {
-        secret: this.config.refreshTokenSecurityKey,
-      });
-    return { userId, login };
+    try {
+      const { userId, login } =
+        await this.jwtService.verifyAsync<JwtTokenPayload>(token, {
+          secret: this.config.refreshTokenSecurityKey,
+        });
+      return { userId, login };
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        throw new ExpiredRefreshTokenError();
+      }
+      throw new InvalidRefreshTokenError();
+    }
   }
 }
